@@ -1,0 +1,754 @@
+/* ==========================================================
+   CARRITO — Estilos propios de la vista (usa base.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+/* ==========================================================
+   ENCABEZADO
+   ========================================================== */
+.carrito-hero {
+  padding-top: 28px;
+}
+
+.carrito-hero__fila {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--negro);
+}
+
+.carrito-hero__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(44px, 9vw, 88px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+.carrito-hero__cantidad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-family: var(--fuente-texto);
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: super;
+}
+
+/* ==========================================================
+   ESTRUCTURA
+   ========================================================== */
+.carrito {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  padding-top: 8px;
+  padding-bottom: 56px;
+}
+
+/* Estado vacío */
+.carrito-vacio {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 72px 20px;
+  text-align: center;
+  color: var(--gris-600);
+}
+
+.carrito-vacio__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 6px;
+  border: 1px dashed var(--gris-400);
+  border-radius: 50%;
+  color: var(--negro);
+}
+
+.carrito-vacio__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  color: var(--negro);
+}
+
+.carrito-vacio .btn {
+  margin-top: 10px;
+}
+
+.carrito--vacio .carrito-vacio {
+  display: flex;
+}
+
+.carrito--vacio .lista,
+.carrito--vacio .resumen {
+  display: none;
+}
+
+/* ==========================================================
+   LISTA DE PRODUCTOS
+   ========================================================== */
+.lista {
+  min-width: 0;
+}
+
+/* Barra de envío gratis */
+.envio-gratis {
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+}
+
+.envio-gratis__texto {
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.envio-gratis__texto strong {
+  color: var(--negro);
+}
+
+.envio-gratis__barra {
+  height: 3px;
+  margin-top: 10px;
+  background: var(--gris-200);
+}
+
+.envio-gratis__barra span {
+  display: block;
+  height: 100%;
+  background: var(--negro);
+  transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.envio-gratis.completo {
+  background: var(--negro);
+  border-color: var(--negro);
+}
+
+.envio-gratis.completo .envio-gratis__texto,
+.envio-gratis.completo .envio-gratis__texto strong {
+  color: var(--blanco);
+}
+
+.envio-gratis.completo .envio-gratis__barra {
+  background: var(--gris-900);
+}
+
+.envio-gratis.completo .envio-gratis__barra span {
+  background: var(--blanco);
+}
+
+.lista__cabecera {
+  display: none;
+}
+
+/* Item: tarjeta compacta en celular */
+.item {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "imagen info    quitar"
+    "imagen precio  precio"
+    "imagen cantidad total";
+  column-gap: 14px;
+  row-gap: 6px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--gris-200);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.item.saliendo {
+  opacity: 0;
+  transform: translateX(24px);
+}
+
+.item.cargando {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.item__imagen {
+  grid-area: imagen;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  aspect-ratio: 4 / 5;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 10px, rgba(0, 0, 0, 0.04) 10px 11px),
+    var(--gris-100);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--gris-600);
+}
+
+.item__imagen {
+  overflow: hidden;
+}
+
+.item__imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item__imagen--oscura {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 10px, rgba(255, 255, 255, 0.05) 10px 11px),
+    var(--grafito);
+  color: var(--gris-400);
+}
+
+.item__info {
+  grid-area: info;
+  min-width: 0;
+}
+
+.item__categoria {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.item__nombre {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.item__nombre a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.item__variante {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.item__precio {
+  grid-area: precio;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.item__etiqueta {
+  margin-right: 4px;
+}
+
+.item__cantidad {
+  grid-area: cantidad;
+  align-self: end;
+}
+
+.item .cantidad {
+  height: 38px;
+}
+
+.item .cantidad__btn {
+  width: 32px;
+}
+
+.item .cantidad input {
+  width: 32px;
+}
+
+.item__total {
+  grid-area: total;
+  align-self: end;
+  justify-self: end;
+  padding-bottom: 6px;
+  font-family: var(--fuente-titulos);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.item__quitar {
+  grid-area: quitar;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin: -6px -6px 0 0;
+  color: var(--gris-600);
+  transition: color var(--transicion), transform var(--transicion);
+}
+
+.item__quitar:hover {
+  color: var(--negro);
+  transform: rotate(90deg);
+}
+
+.lista__acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+}
+
+.lista__link {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lista__link--vaciar {
+  color: var(--gris-600);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.lista__link--vaciar:hover {
+  color: var(--negro);
+}
+
+/* ==========================================================
+   RESUMEN
+   ========================================================== */
+.resumen {
+  min-width: 0;
+}
+
+.resumen__interior {
+  padding: 24px 20px;
+  background: var(--blanco);
+  border: 1px solid var(--negro);
+}
+
+.resumen__titulo {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--gris-200);
+  font-family: var(--fuente-titulos);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.resumen__label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Medio de pago */
+.pago {
+  margin-top: 20px;
+  border: 0;
+}
+
+.pago__opcion {
+  display: block;
+  cursor: pointer;
+}
+
+.pago__opcion + .pago__opcion {
+  margin-top: 8px;
+}
+
+.pago__opcion input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pago__caja {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px 13px 42px;
+  border: 1px solid var(--gris-200);
+  transition: border-color var(--transicion), background var(--transicion);
+}
+
+.pago__caja::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--negro);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.pago__opcion input:checked + .pago__caja {
+  border-color: var(--negro);
+  background: var(--hueso);
+}
+
+.pago__opcion input:checked + .pago__caja::before {
+  background: var(--negro);
+  box-shadow: inset 0 0 0 3px var(--blanco);
+}
+
+.pago__opcion input:focus-visible + .pago__caja {
+  outline: 2px solid var(--negro);
+  outline-offset: 2px;
+}
+
+.pago__nombre {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pago__detalle {
+  font-size: 12px;
+  color: var(--gris-600);
+  text-align: right;
+}
+
+/* Formularios chicos (envío y cupón) */
+.mini-form {
+  margin-top: 22px;
+}
+
+.mini-form__fila {
+  display: flex;
+  border-bottom: 1px solid var(--negro);
+}
+
+.mini-form__fila[hidden] {
+  display: none;
+}
+
+.mini-form__fila input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.mini-form__fila input::placeholder {
+  text-transform: none;
+  color: var(--gris-400);
+}
+
+.mini-form__fila button {
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cupon-activo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 13px;
+}
+
+.cupon-activo[hidden] {
+  display: none;
+}
+
+.cupon-activo small {
+  color: var(--gris-400);
+}
+
+.cupon-activo button {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Totales */
+.totales {
+  margin-top: 24px;
+  border-top: 1px solid var(--gris-200);
+}
+
+.totales__fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.totales__fila[hidden] {
+  display: none;
+}
+
+.totales__fila dt {
+  color: var(--gris-600);
+}
+
+.totales__pendiente {
+  color: var(--gris-400);
+  font-style: italic;
+}
+
+.totales__fila--total {
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--negro);
+  align-items: baseline;
+}
+
+.totales__fila--total dt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--negro);
+}
+
+.totales__fila--total dd {
+  font-family: var(--fuente-titulos);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.totales__cuotas {
+  font-size: 13px;
+  text-align: right;
+  color: var(--gris-600);
+}
+
+.totales__cuotas[hidden] {
+  display: none;
+}
+
+.totales__cuotas strong {
+  color: var(--negro);
+}
+
+.resumen__finalizar {
+  width: 100%;
+  height: 54px;
+  margin-top: 20px;
+}
+
+.resumen__seguro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.resumen__logos {
+  margin-top: 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: var(--gris-400);
+}
+
+/* ==========================================================
+   BARRA FIJA CON EL TOTAL (celular / tablet)
+   ========================================================== */
+.barra-total {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px var(--gutter);
+  background: var(--blanco);
+  border-top: 1px solid var(--negro);
+  transition: transform var(--transicion);
+}
+
+.barra-total.oculta {
+  transform: translateY(100%);
+}
+
+.barra-total__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.barra-total__precio {
+  font-family: var(--fuente-titulos);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.barra-total .btn {
+  height: 46px;
+}
+
+/* Lugar para que la barra no tape el footer ni el WhatsApp */
+body.con-barra {
+  padding-bottom: 68px;
+}
+
+body.con-barra .whatsapp {
+  bottom: 84px;
+}
+
+.whatsapp {
+  transition: transform var(--transicion), bottom var(--transicion);
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .carrito-hero {
+    padding-top: 40px;
+  }
+
+  .carrito-hero__fila {
+    padding-bottom: 28px;
+  }
+
+  .carrito-hero__fila {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .pasos {
+    flex: 0 0 360px;
+  }
+
+  /* La lista pasa a formato tabla. "Producto" cubre imagen + info */
+  .lista__cabecera {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 110px 130px 120px 32px;
+    gap: 16px;
+    margin-top: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gris-200);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gris-600);
+  }
+
+  .lista__cabecera span:nth-child(n + 2) {
+    text-align: center;
+  }
+
+  .lista__cabecera span:nth-child(4) {
+    text-align: right;
+  }
+
+  .item {
+    grid-template-columns: 96px minmax(0, 1fr) 110px 130px 120px 32px;
+    grid-template-areas: "imagen info precio cantidad total quitar";
+    align-items: center;
+    column-gap: 16px;
+    padding: 22px 0;
+  }
+
+  .item__precio {
+    text-align: center;
+    color: var(--negro);
+    font-size: 14px;
+  }
+
+  .item__etiqueta {
+    display: none;
+  }
+
+  .item__cantidad {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .item__total {
+    align-self: center;
+    padding: 0;
+    font-size: 22px;
+  }
+
+  .item__quitar {
+    align-self: center;
+    margin: 0;
+  }
+
+  .resumen__interior {
+    padding: 32px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .carrito {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    gap: 56px;
+    align-items: start;
+    padding-bottom: 96px;
+  }
+
+  .carrito--vacio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resumen {
+    position: sticky;
+    top: calc(var(--alto-header) + 47px + 24px);
+    margin-top: 24px;
+  }
+
+  .barra-total {
+    display: none;
+  }
+
+  body.con-barra {
+    padding-bottom: 0;
+  }
+
+  body.con-barra .whatsapp {
+    bottom: 24px;
+  }
+}

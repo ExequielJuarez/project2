@@ -1,0 +1,422 @@
+/* ==========================================================
+   ADMIN · PANEL — Estilos propios de la vista (usa base.css + admin.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.admin-main > .panel + .panel,
+.admin-main > .dashboard__fila,
+.admin-main > .panel {
+  margin-top: 16px;
+}
+
+/* ==========================================================
+   INDICADORES
+   ========================================================== */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kpi__valor {
+  white-space: nowrap;
+}
+
+/* La cifra principal: una sola por vista, grande y en la misma tipografía */
+.kpi--principal {
+  grid-column: 1 / -1;
+  background: var(--negro);
+  border-color: var(--negro);
+  color: var(--blanco);
+}
+
+.kpi--principal .kpi__label,
+.kpi--principal .kpi__detalle {
+  color: var(--gris-400);
+}
+
+.kpi--principal .kpi__valor {
+  font-size: clamp(36px, 8vw, 52px);
+  letter-spacing: -0.02em;
+}
+
+.kpi--principal .kpi__delta {
+  color: var(--blanco);
+}
+
+/* ==========================================================
+   GRÁFICO
+   ========================================================== */
+.grafico {
+  position: relative;
+}
+
+.grafico__controles {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.leyenda {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.leyenda li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.leyenda__muestra {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.leyenda__muestra--ganancia {
+  background: var(--negro);
+}
+
+.leyenda__muestra--costo {
+  background: #8a8a8a;
+}
+
+.grafico__lienzo {
+  position: relative;
+  height: 260px;
+}
+
+.grafico__lienzo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.grafico__cargando {
+  padding-top: 110px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--gris-400);
+}
+
+/* Elementos del SVG (los crea admin-dashboard.js) */
+.eje-y text,
+.eje-x text {
+  fill: var(--gris-600);
+  font-family: var(--fuente-texto);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.grilla-y line {
+  stroke: var(--gris-200);
+  stroke-width: 1;
+}
+
+.linea-base {
+  stroke: var(--gris-400);
+  stroke-width: 1;
+}
+
+.barra-ganancia {
+  fill: var(--negro);
+}
+
+.barra-costo {
+  fill: #8a8a8a;
+}
+
+.columna {
+  cursor: default;
+  outline: none;
+}
+
+.columna__zona {
+  fill: transparent;
+}
+
+.columna:hover .columna__zona,
+.columna:focus .columna__zona {
+  fill: rgba(0, 0, 0, 0.05);
+}
+
+.columna:focus-visible .columna__zona {
+  stroke: var(--negro);
+  stroke-width: 1;
+}
+
+.etiqueta-max {
+  fill: var(--negro);
+  font-family: var(--fuente-texto);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Tooltip */
+.grafico__tooltip {
+  position: absolute;
+  z-index: 5;
+  min-width: 190px;
+  padding: 12px 14px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 12px;
+  pointer-events: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.grafico__tooltip[hidden] {
+  display: none;
+}
+
+.grafico__tooltip strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.grafico__tooltip dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 3px 16px;
+}
+
+.grafico__tooltip dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--gris-400);
+}
+
+.grafico__tooltip dd {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.grafico__tooltip .muestra {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.grafico__tabla {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.grafico__tabla[hidden] {
+  display: none;
+}
+
+.grafico.con-tabla .grafico__lienzo {
+  display: none;
+}
+
+/* ==========================================================
+   RANKING Y STOCK
+   ========================================================== */
+.dashboard__fila {
+  display: grid;
+  gap: 16px;
+}
+
+.ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  list-style: none;
+}
+
+.ranking__texto {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.ranking__pos {
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  color: var(--gris-400);
+}
+
+.ranking__nombre {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking__nombre:hover {
+  text-decoration: underline;
+}
+
+.ranking__unidades {
+  font-size: 12px;
+  color: var(--gris-600);
+  white-space: nowrap;
+}
+
+.ranking__barra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ranking__barra span {
+  height: 10px;
+  border-radius: 0 4px 4px 0;
+  background: var(--negro);
+}
+
+.ranking__barra strong {
+  flex: none;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stock-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--gris-200);
+  border: 1px solid var(--gris-200);
+}
+
+.stock-resumen div {
+  padding: 12px 14px;
+  background: var(--blanco);
+}
+
+.stock-resumen dt {
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.stock-resumen dd {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stock-alertas__titulo {
+  margin: 18px 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.stock-alertas li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px 78px;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--gris-100);
+  font-size: 13px;
+}
+
+.stock-alertas a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-alertas a:hover {
+  text-decoration: underline;
+}
+
+.stock-alertas .stock-tag {
+  justify-self: end;
+}
+
+/* Medidor: el relleno negro es el stock, la pista gris es el nivel ideal */
+.medidor {
+  display: block;
+  height: 6px;
+  background: var(--gris-200);
+}
+
+.medidor span {
+  display: block;
+  height: 100%;
+  background: var(--negro);
+}
+
+/* Últimos pedidos */
+.tabla-scroll {
+  overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+
+.tabla--pedidos {
+  min-width: 620px;
+}
+
+.tabla--pedidos td {
+  white-space: nowrap;
+}
+
+.tabla--pedidos .estado {
+  text-transform: capitalize;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .kpi__valor {
+    font-size: 28px;
+  }
+
+  .grafico__lienzo {
+    height: 300px;
+  }
+
+  .tabla-scroll {
+    margin: 0 -24px;
+    padding: 0 24px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .kpis {
+    grid-template-columns: 1.6fr repeat(4, minmax(0, 1fr));
+  }
+
+  .kpi--principal {
+    grid-column: auto;
+  }
+
+  .kpi:not(.kpi--principal) .kpi__valor {
+    font-size: 24px;
+  }
+
+  .grafico__lienzo {
+    height: 320px;
+  }
+
+  .dashboard__fila {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tabla-scroll {
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+  }
+}

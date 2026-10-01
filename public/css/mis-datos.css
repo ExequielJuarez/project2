@@ -1,0 +1,213 @@
+/* ==========================================================
+   MIS DATOS — Estilos propios (usa base.css + cuenta.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.mis-datos {
+  display: grid;
+  gap: 16px;
+  max-width: 880px;
+}
+
+.mis-datos__form {
+  display: grid;
+  gap: 16px;
+}
+
+.aviso--error {
+  margin-bottom: 0;
+}
+
+.panel-cuenta {
+  padding: 20px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+}
+
+.panel-cuenta__cabeza {
+  margin-bottom: 18px;
+}
+
+.panel-cuenta__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.panel-cuenta__bajada {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.panel-cuenta__nota {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.panel-cuenta__borrar {
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--gris-600);
+}
+
+.panel-cuenta__borrar:hover {
+  color: var(--negro);
+}
+
+.panel-cuenta__borrar[hidden] {
+  display: none;
+}
+
+.campos-cuenta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+/* Barra para guardar (queda fija abajo mientras hay cambios) */
+.mis-datos__acciones {
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px 16px;
+  padding: 12px 0;
+  background: var(--hueso);
+}
+
+.mis-datos__estado {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mis-datos__estado:empty {
+  display: none;
+}
+
+/* Queda fija abajo solo mientras hay cambios sin guardar */
+.mis-datos__acciones.con-cambios {
+  position: sticky;
+  bottom: 0;
+  border-top: 1px solid var(--negro);
+}
+
+.mis-datos__acciones .btn {
+  flex: 1 1 auto;
+}
+
+/* Contraseña */
+.clave-desplegable summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.clave-desplegable summary::-webkit-details-marker {
+  display: none;
+}
+
+.clave-desplegable[open] summary {
+  display: none;
+}
+
+.clave-form {
+  display: grid;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.clave-form .btn {
+  justify-self: start;
+}
+
+.campo__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.clave {
+  position: relative;
+}
+
+.clave .campo__control {
+  padding-right: 52px;
+}
+
+.clave__ver {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: var(--gris-600);
+}
+
+.clave__ver:hover {
+  color: var(--negro);
+}
+
+.clave__ojo-tachado,
+.clave__ver[aria-pressed="true"] .clave__ojo {
+  display: none;
+}
+
+.clave__ver[aria-pressed="true"] .clave__ojo-tachado {
+  display: block;
+}
+
+.clave__mayus {
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.clave__mayus[hidden] {
+  display: none;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .panel-cuenta {
+    padding: 28px 32px;
+  }
+
+  .campos-cuenta {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .campos-cuenta > .campo {
+    grid-column: span 3;
+  }
+
+  .campos-cuenta > .campo--completo {
+    grid-column: 1 / -1;
+  }
+
+  .campos-cuenta > .campo--ancho {
+    grid-column: span 4;
+  }
+
+  .campos-cuenta > .campo--angosto {
+    grid-column: span 2;
+  }
+
+  .mis-datos__acciones .btn {
+    flex: none;
+  }
+}

@@ -1,0 +1,127 @@
+<%- include('../partials/admin-inicio') %>
+
+<%
+  const hayFiltros = filtros.q || filtros.categoria || filtros.stock;
+  const estadoStock = (s) => s === 0 ? ['sin', 'Sin stock'] : s <= STOCK_BAJO ? ['bajo', 'Bajo'] : ['ok', 'OK'];
+%>
+
+      <div class="admin-cabecera">
+        <div>
+          <p class="admin-cabecera__migas"><a href="/admin">Panel</a> / Productos</p>
+          <h1 class="admin-cabecera__titulo">Productos</h1>
+          <p class="admin-cabecera__bajada">
+            <%= totalProductos %> en catálogo · <strong id="unidadesTotales"><%= stockResumen.unidades %></strong> unidades en stock ·
+            valor al costo <strong id="valorStock"><%= formatoCompacto(stockResumen.valorCosto) %></strong>
+          </p>
+        </div>
+        <div class="admin-cabecera__acciones">
+          <a href="/admin/productos/nuevo" class="btn btn--solido btn--chico">+ Nuevo producto</a>
+        </div>
+      </div>
+
+      <!-- Filtros (funcionan sin JS: es un formulario GET) -->
+      <form class="filtros-admin" id="filtrosProductos" action="/admin/productos" method="GET" role="search">
+        <label class="filtros-admin__buscar">
+          <span class="sr-only">Buscar producto</span>
+          <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input class="campo__control" type="search" name="q" value="<%= filtros.q %>" placeholder="Buscar por nombre o código">
+        </label>
+        <select class="campo__control" name="categoria" aria-label="Categoría">
+          <option value="">Todas las categorías</option>
+          <% categorias.forEach(c => { %>
+            <option value="<%= c %>" <%= filtros.categoria === c ? 'selected' : '' %>><%= c %></option>
+          <% }) %>
+        </select>
+        <select class="campo__control" name="stock" aria-label="Stock">
+          <option value="">Todo el stock</option>
+          <option value="bajo" <%= filtros.stock === 'bajo' ? 'selected' : '' %>>Stock bajo (≤ <%= STOCK_BAJO %>)</option>
+          <option value="sin" <%= filtros.stock === 'sin' ? 'selected' : '' %>>Sin stock</option>
+        </select>
+        <select class="campo__control" name="orden" aria-label="Ordenar">
+          <option value="nombre" <%= filtros.orden === 'nombre' ? 'selected' : '' %>>Nombre A–Z</option>
+          <option value="precio-desc" <%= filtros.orden === 'precio-desc' ? 'selected' : '' %>>Mayor precio</option>
+          <option value="margen-desc" <%= filtros.orden === 'margen-desc' ? 'selected' : '' %>>Mayor margen</option>
+          <option value="stock-asc" <%= filtros.orden === 'stock-asc' ? 'selected' : '' %>>Menos stock</option>
+        </select>
+        <noscript><button class="btn btn--solido btn--chico" type="submit">Filtrar</button></noscript>
+      </form>
+
+      <% if (hayFiltros) { %>
+        <p class="resultado">
+          <%= lista.length %> <%= lista.length === 1 ? 'resultado' : 'resultados' %>
+          <a href="/admin/productos" class="panel__link">Limpiar filtros</a>
+        </p>
+      <% } %>
+
+      <% if (!lista.length) { %>
+        <div class="admin-vacio">
+          <strong>No hay productos</strong>
+          <%= hayFiltros ? 'Probá con otros filtros.' : 'Cargá el primero con “Nuevo producto”.' %>
+        </div>
+      <% } else { %>
+        <div class="panel panel--tabla">
+          <table class="tabla tabla--productos">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="num">Precio</th>
+                <th class="num">Costo</th>
+                <th class="num">Margen</th>
+                <th>Stock</th>
+                <th><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% lista.forEach(p => {
+                   const margen = (p.precio - p.costo) / p.precio;
+                   const [claseStock, textoStock] = estadoStock(p.stock); %>
+                <tr data-id="<%= p.id %>">
+                  <td data-label="Producto">
+                    <a href="/admin/productos/<%= p.id %>" class="producto-celda">
+                      <span class="mini"><% if (p.imagen) { %><img src="<%= p.imagen %>" alt=""><% } else { %>IMG<% } %></span>
+                      <span class="producto-celda__texto">
+                        <strong><%= p.nombre %></strong>
+                        <small>#<%= String(p.id).padStart(4, '0') %> · <%= p.categoria %></small>
+                      </span>
+                    </a>
+                  </td>
+                  <td class="num" data-label="Precio"><%= formatoPrecio(p.precio) %></td>
+                  <td class="num" data-label="Costo"><%= formatoPrecio(p.costo) %></td>
+                  <td class="num" data-label="Margen">
+                    <span class="margen"><%= formatoPorcentaje(margen) %></span>
+                    <small class="margen__monto"><%= formatoCompacto(p.precio - p.costo) %> c/u</small>
+                  </td>
+                  <td data-label="Stock">
+                    <div class="stock-ajuste" data-stock-id="<%= p.id %>">
+                      <button type="button" class="stock-ajuste__btn" data-cambio="-1" aria-label="Restar 1 de stock">−</button>
+                      <input type="number" class="stock-ajuste__input" value="<%= p.stock %>" min="0" inputmode="numeric" aria-label="Stock de <%= p.nombre %>">
+                      <button type="button" class="stock-ajuste__btn" data-cambio="1" aria-label="Sumar 1 de stock">+</button>
+                    </div>
+                    <span class="stock-tag stock-tag--<%= claseStock %>" data-stock-tag><%= textoStock %></span>
+                  </td>
+                  <td class="acciones">
+                    <a href="/admin/productos/<%= p.id %>" class="accion" title="Ver" aria-label="Ver <%= p.nombre %>">
+                      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                    </a>
+                    <a href="/admin/productos/<%= p.id %>/editar" class="accion" title="Editar" aria-label="Editar <%= p.nombre %>">
+                      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20h4L19 9l-4-4L4 16v4zM13 7l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                    </a>
+                    <form action="/admin/productos/<%= p.id %>?_method=DELETE" method="POST"
+                          data-confirmar="Se va a borrar “<%= p.nombre %>” del catálogo. Esta acción no se puede deshacer."
+                          data-confirmar-titulo="¿Eliminar producto?">
+                      <button type="submit" class="accion accion--borrar" title="Eliminar" aria-label="Eliminar <%= p.nombre %>">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+
+<%- include('../partials/admin-fin') %>
+<script src="/js/admin-productos.js"></script>
+</body>
+</html>

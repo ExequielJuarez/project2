@@ -1,0 +1,227 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const r = resumen;
+  const vacio = r.items.length === 0;
+%>
+
+  <!-- ═════════════ ENCABEZADO ═════════════ -->
+  <section class="carrito-hero contenedor">
+    <nav class="migas" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <span aria-current="page">Carrito</span>
+    </nav>
+
+    <div class="carrito-hero__fila">
+      <h1 class="carrito-hero__titulo">
+        Tu carrito
+        <sup class="carrito-hero__cantidad" id="cantidadTitulo"><%= r.cantidad %></sup>
+      </h1>
+
+      <%- include('partials/pasos', { pasoActual: 1 }) %>
+    </div>
+  </section>
+
+  <!-- ═════════════ CARRITO ═════════════ -->
+  <main class="carrito contenedor <%= vacio ? 'carrito--vacio' : '' %>" id="carrito">
+
+    <!-- Estado vacío -->
+    <div class="carrito-vacio">
+      <span class="carrito-vacio__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="40" height="40"><path d="M5 8h14l-1.2 12H6.2L5 8z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 016 0v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      </span>
+      <h2 class="carrito-vacio__titulo">Tu carrito está vacío</h2>
+      <p>Todavía no agregaste productos. Date una vuelta por el catálogo.</p>
+      <a href="/catalogo" class="btn btn--solido">Ir al catálogo</a>
+    </div>
+
+    <!-- Lista de productos -->
+    <section class="lista" aria-label="Productos en el carrito">
+
+      <div class="envio-gratis <%= r.envioGratis ? 'completo' : '' %>" id="envioGratis">
+        <p class="envio-gratis__texto" id="envioGratisTexto">
+          <% if (r.envioGratis) { %>
+            <strong>¡Tenés envío gratis!</strong>
+          <% } else { %>
+            Te faltan <strong><%= formatoPrecio(r.faltaEnvioGratis) %></strong> para el envío gratis
+          <% } %>
+        </p>
+        <div class="envio-gratis__barra"><span id="envioGratisBarra" style="width: <%= r.progresoEnvio %>%"></span></div>
+      </div>
+
+      <div class="lista__cabecera" aria-hidden="true">
+        <span>Producto</span>
+        <span>Precio</span>
+        <span>Cantidad</span>
+        <span>Total</span>
+      </div>
+
+      <div class="lista__items" id="listaItems">
+        <% r.items.forEach((item, n) => { %>
+          <article class="item" data-clave="<%= item.clave %>" data-stock="<%= item.producto.stock %>">
+            <a href="/producto/<%= item.id %>" class="item__imagen <%= n % 3 === 1 ? 'item__imagen--oscura' : '' %>">
+              <% if (item.producto.imagen) { %>
+                <img src="<%= item.producto.imagen %>" alt="">
+              <% } else { %>
+                <span>(IMAGEN)</span>
+              <% } %>
+            </a>
+
+            <div class="item__info">
+              <p class="item__categoria"><%= item.producto.categoria %></p>
+              <h3 class="item__nombre"><a href="/producto/<%= item.id %>"><%= item.producto.nombre %></a></h3>
+              <% if (item.color) { %>
+                <p class="item__variante">Color: <%= item.color %><%= item.talle ? ' · Talle: ' + item.talle : '' %></p>
+              <% } %>
+            </div>
+
+            <p class="item__precio">
+              <span class="item__etiqueta">Precio</span>
+              <%= formatoPrecio(item.producto.precio) %>
+            </p>
+
+            <div class="item__cantidad">
+              <div class="cantidad" aria-label="Cantidad">
+                <button type="button" class="cantidad__btn" data-paso="-1" aria-label="Restar">−</button>
+                <input type="number" value="<%= item.cantidad %>" min="1" max="<%= item.producto.stock %>" inputmode="numeric" aria-label="Cantidad">
+                <button type="button" class="cantidad__btn" data-paso="1" aria-label="Sumar">+</button>
+              </div>
+            </div>
+
+            <p class="item__total" data-total><%= formatoPrecio(item.subtotal) %></p>
+
+            <button class="item__quitar" aria-label="Quitar <%= item.producto.nombre %>">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+          </article>
+        <% }) %>
+      </div>
+
+      <div class="lista__acciones">
+        <a href="/catalogo" class="lista__link">← Seguir comprando</a>
+        <button class="lista__link lista__link--vaciar" id="btnVaciar">Vaciar carrito</button>
+      </div>
+    </section>
+
+    <!-- Resumen del pedido -->
+    <aside class="resumen" aria-label="Resumen de compra">
+      <div class="resumen__interior">
+        <h2 class="resumen__titulo">Resumen</h2>
+
+        <!-- Medio de pago -->
+        <fieldset class="pago">
+          <legend class="resumen__label">Medio de pago</legend>
+          <label class="pago__opcion">
+            <input type="radio" name="medioPago" value="tarjeta" <%= r.medioPago === 'tarjeta' ? 'checked' : '' %>>
+            <span class="pago__caja">
+              <span class="pago__nombre">Tarjeta</span>
+              <span class="pago__detalle"><%= r.cuotas %> cuotas sin interés</span>
+            </span>
+          </label>
+          <label class="pago__opcion">
+            <input type="radio" name="medioPago" value="transferencia" <%= r.medioPago === 'transferencia' ? 'checked' : '' %>>
+            <span class="pago__caja">
+              <span class="pago__nombre">Transferencia</span>
+              <span class="pago__detalle">-<%= Math.round(descuentoTransferencia * 100) %>% de descuento</span>
+            </span>
+          </label>
+        </fieldset>
+
+        <!-- Envío -->
+        <form class="mini-form" id="formEnvio" novalidate>
+          <label for="codigoPostal" class="resumen__label">Envío</label>
+          <div class="mini-form__fila">
+            <input type="text" id="codigoPostal" placeholder="Código postal" inputmode="numeric" maxlength="4" value="<%= r.codigoPostal || '' %>">
+            <button type="submit">Calcular</button>
+          </div>
+        </form>
+
+        <!-- Cupón -->
+        <form class="mini-form" id="formCupon" novalidate>
+          <label for="codigoCupon" class="resumen__label">Cupón de descuento</label>
+          <div class="mini-form__fila" id="cuponFila" <%= r.cupon ? 'hidden' : '' %>>
+            <input type="text" id="codigoCupon" placeholder="Ej: BIENVENIDA" autocomplete="off">
+            <button type="submit">Aplicar</button>
+          </div>
+          <div class="cupon-activo" id="cuponActivo" <%= r.cupon ? '' : 'hidden' %>>
+            <span><strong id="cuponCodigo"><%= r.cupon ? r.cupon.codigo : '' %></strong> <small id="cuponDescripcion"><%= r.cupon ? r.cupon.descripcion : '' %></small></span>
+            <button type="button" id="btnQuitarCupon" aria-label="Quitar cupón">Quitar</button>
+          </div>
+        </form>
+
+        <!-- Totales -->
+        <dl class="totales">
+          <div class="totales__fila">
+            <dt>Subtotal</dt>
+            <dd data-valor="subtotal"><%= formatoPrecio(r.subtotal) %></dd>
+          </div>
+          <div class="totales__fila" data-fila="descuentoCupon" <%= r.descuentoCupon ? '' : 'hidden' %>>
+            <dt>Cupón</dt>
+            <dd data-valor="descuentoCupon">-<%= formatoPrecio(r.descuentoCupon) %></dd>
+          </div>
+          <div class="totales__fila" data-fila="descuentoPago" <%= r.descuentoPago ? '' : 'hidden' %>>
+            <dt>Descuento transferencia</dt>
+            <dd data-valor="descuentoPago">-<%= formatoPrecio(r.descuentoPago) %></dd>
+          </div>
+          <div class="totales__fila">
+            <dt>Envío</dt>
+            <dd data-valor="envio">
+              <% if (r.envio === null) { %>
+                <span class="totales__pendiente">A calcular</span>
+              <% } else if (r.envio === 0) { %>
+                Gratis
+              <% } else { %>
+                <%= formatoPrecio(r.envio) %>
+              <% } %>
+            </dd>
+          </div>
+          <div class="totales__fila totales__fila--total">
+            <dt>Total</dt>
+            <dd data-valor="total"><%= formatoPrecio(r.total) %></dd>
+          </div>
+        </dl>
+        <p class="totales__cuotas" id="totalCuotas" <%= r.medioPago === 'tarjeta' ? '' : 'hidden' %>>
+          o <%= r.cuotas %> cuotas sin interés de <strong data-valor="cuota"><%= formatoPrecio(r.total / r.cuotas) %></strong>
+        </p>
+
+        <a href="/checkout/datos" class="btn btn--solido resumen__finalizar" id="btnFinalizar">Finalizar compra</a>
+
+        <p class="resumen__seguro">
+          <svg viewBox="0 0 24 24" width="16" height="16"><rect x="5" y="10" width="14" height="10" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 10V7a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          Compra 100% segura
+        </p>
+        <p class="resumen__logos">(VISA) (MASTER) (AMEX) (MP)</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ═════════════ RECOMENDADOS ═════════════ -->
+  <% if (recomendados.length) { %>
+    <section class="relacionados contenedor">
+      <div class="relacionados__cabecera">
+        <h2 class="relacionados__titulo">Completá tu compra</h2>
+        <a href="/catalogo" class="relacionados__link">Ver todo →</a>
+      </div>
+      <div class="relacionados__grilla">
+        <% recomendados.forEach((p, i) => { %>
+          <%- include('partials/tarjeta', { p, i }) %>
+        <% }) %>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- Barra fija con el total (celular / tablet) -->
+  <div class="barra-total" id="barraTotal">
+    <div>
+      <p class="barra-total__label">Total</p>
+      <p class="barra-total__precio" data-valor="total"><%= formatoPrecio(r.total) %></p>
+    </div>
+    <a href="/checkout/datos" class="btn btn--solido" data-finalizar>Finalizar compra</a>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="/js/carrito.js"></script>
+</body>
+</html>

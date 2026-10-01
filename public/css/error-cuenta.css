@@ -1,0 +1,42 @@
+/* ==========================================================
+   ERROR (pedido no encontrado) — usa base.css
+   ========================================================== */
+
+.error-cuenta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 64px;
+  padding-bottom: 96px;
+  text-align: center;
+}
+
+.error-cuenta__codigo {
+  font-family: var(--fuente-titulos);
+  font-size: 88px;
+  font-style: italic;
+  line-height: 1;
+  color: var(--gris-200);
+}
+
+.error-cuenta__titulo {
+  margin-top: 8px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.error-cuenta__texto {
+  max-width: 420px;
+  margin-top: 12px;
+  color: var(--gris-600);
+}
+
+.error-cuenta__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+}

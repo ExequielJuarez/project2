@@ -1,0 +1,118 @@
+<%- include('../partials/admin-inicio') %>
+
+<%
+  // Secciones con algún error (se abren solas para mostrarlo)
+  const conError = new Set(Object.keys(errores).map((k) => k.split(".")[0]));
+  const hayErrores = Object.keys(errores).length > 0;
+%>
+
+      <div class="admin-cabecera">
+        <div>
+          <p class="admin-cabecera__migas"><a href="/admin">Panel</a> / Página de inicio</p>
+          <h1 class="admin-cabecera__titulo">Página de inicio</h1>
+          <p class="admin-cabecera__bajada">
+            Cambiá textos, fotos y qué secciones se muestran. Lo ves al instante en la vista previa y se publica al guardar.
+            <% if (ultimaEdicion) { %>
+              <br><span class="editor-ultima">Última edición: <%= formatoFecha(ultimaEdicion.fecha, true) %><%= ultimaEdicion.editor ? ` · ${ultimaEdicion.editor}` : '' %></span>
+            <% } %>
+          </p>
+        </div>
+        <div class="admin-cabecera__acciones">
+          <a href="/" target="_blank" rel="noopener" class="btn btn--linea btn--chico btn--blanco">Ver inicio ↗</a>
+        </div>
+      </div>
+
+      <% if (hayErrores) { %>
+        <div class="aviso aviso--error" role="alert" tabindex="-1" id="resumenErrores">
+          <strong>No se guardó. Revisá esto:</strong>
+          <ul>
+            <% Object.entries(errores).forEach(([clave, msg]) => { %>
+              <li><%= secciones[clave.split('.')[0]] ? secciones[clave.split('.')[0]].titulo + ': ' : '' %><%= msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <div class="editor">
+        <form action="/admin/inicio?_method=PUT" method="POST" enctype="multipart/form-data" id="formInicio" class="editor__form" data-prefijo-previa="<%= prefijoPrevia %>" novalidate>
+
+          <p class="editor__consejo">
+            <strong>Tip:</strong> escribí <code>*así*</code> para que una palabra salga en <em>cursiva</em>.
+            Las fotos pueden ser JPG, PNG o WEBP de hasta 3 MB.
+          </p>
+
+          <% Object.entries(secciones).forEach(([id, sec], n) => { %>
+            <% const datos = contenido[id]; %>
+            <details class="editor-seccion <%= datos.visible ? '' : 'oculta' %>" data-seccion="<%= id %>" <%= conError.has(id) ? 'open' : '' %>>
+              <summary class="editor-seccion__cabeza">
+                <span class="editor-seccion__num"><%= String(n + 1).padStart(2, '0') %></span>
+                <span class="editor-seccion__textos">
+                  <strong><%= sec.titulo %></strong>
+                  <small><%= sec.descripcion %></small>
+                </span>
+                <span class="editor-seccion__estado" data-estado><%= datos.visible ? '' : 'Oculta' %></span>
+                <span class="editor-seccion__flecha" aria-hidden="true"></span>
+              </summary>
+
+              <div class="editor-seccion__cuerpo">
+                <% if (!sec.siempreVisible) { %>
+                  <label class="interruptor">
+                    <input type="hidden" name="<%= id %>[visible]" value="0">
+                    <input type="checkbox" name="<%= id %>[visible]" value="1" <%= datos.visible ? 'checked' : '' %> data-visible>
+                    <span class="interruptor__pista" aria-hidden="true"></span>
+                    <span>Mostrar esta sección en el inicio</span>
+                  </label>
+                <% } %>
+
+                <div class="ce-grilla">
+                  <% Object.entries(sec.campos).forEach(([clave, def]) => { %>
+                    <%- include('../partials/campo-inicio', { def, ruta: [id, clave], valor: datos[clave], original: original[id][clave], errores }) %>
+                  <% }) %>
+                </div>
+              </div>
+            </details>
+          <% }) %>
+
+          <!-- Barra para guardar (queda fija abajo) -->
+          <div class="editor-guardar" id="barraGuardar">
+            <p class="editor-guardar__estado" id="estadoCambios" aria-live="polite">Sin cambios</p>
+            <div class="editor-guardar__acciones">
+              <a href="/admin/inicio" class="btn btn--linea btn--chico btn--blanco" id="btnDescartar" hidden>Descartar</a>
+              <button type="button" class="btn btn--linea btn--chico btn--blanco editor-guardar__previa" id="btnAbrirPrevia">Vista previa</button>
+              <button type="submit" class="btn btn--solido btn--chico" id="btnGuardar">Guardar cambios</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Vista previa en vivo -->
+        <aside class="previa" id="previa" aria-label="Vista previa del inicio">
+          <div class="previa__barra">
+            <div class="previa__dispositivos" role="group" aria-label="Tamaño de la vista previa">
+              <button type="button" class="activo" data-ancho="1280" aria-pressed="true">PC</button>
+              <button type="button" data-ancho="820" aria-pressed="false">Tablet</button>
+              <button type="button" data-ancho="390" aria-pressed="false">Celular</button>
+            </div>
+            <span class="previa__estado" id="estadoPrevia">Vista previa</span>
+            <button type="button" class="previa__cerrar" id="btnCerrarPrevia" aria-label="Cerrar vista previa">×</button>
+          </div>
+          <div class="previa__marco" id="previaMarco">
+            <iframe id="previaFrame" title="Vista previa del inicio" tabindex="-1"></iframe>
+          </div>
+          <p class="previa__nota">Así se va a ver. Todavía no está publicado hasta que guardes.</p>
+        </aside>
+      </div>
+
+      <form action="/admin/inicio?_method=DELETE" method="POST" class="zona-peligro"
+            data-confirmar="Todos los textos y fotos del inicio vuelven a como estaban originalmente. Las fotos que subiste se borran."
+            data-confirmar-titulo="¿Restablecer el inicio?" data-confirmar-boton="Restablecer">
+        <div>
+          <strong>Volver al inicio original</strong>
+          <p>Deshace todos los cambios hechos desde este panel.</p>
+        </div>
+        <button type="submit" class="btn btn--linea btn--chico btn--blanco">Restablecer</button>
+      </form>
+
+<%- include('../partials/admin-fin') %>
+<script src="/js/admin-inicio.js"></script>
+</body>
+</html>

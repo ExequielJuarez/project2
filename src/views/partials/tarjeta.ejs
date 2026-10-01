@@ -1,0 +1,48 @@
+<article class="tarjeta"
+         data-id="<%= p.id %>"
+         data-nombre="<%= p.nombre %>"
+         data-categoria="<%= p.categoria %>"
+         data-color="<%= p.color %>"
+         data-talles="<%= (p.talles || []).join(',') %>"
+         data-precio="<%= p.precio %>"
+         data-orden="<%= typeof i !== 'undefined' ? i : 0 %>">
+  <div class="tarjeta__media">
+    <a href="/producto/<%= p.id %>" class="tarjeta__imagen">
+      <% if (p.stock <= 0) { %>
+        <span class="tarjeta__etiqueta tarjeta__etiqueta--agotado">Sin stock</span>
+      <% } else if (p.etiqueta) { %>
+        <span class="tarjeta__etiqueta"><%= p.etiqueta %></span>
+      <% } %>
+      <% if (p.imagen) { %>
+        <img class="tarjeta__foto" src="<%= p.imagen %>" alt="<%= p.nombre %>" loading="lazy">
+      <% } else { %>
+        <span class="placeholder">
+          <span class="placeholder__texto">Matilda</span>
+        </span>
+      <% } %>
+      <% if (p.imagenes && p.imagenes[1]) { %>
+        <img class="tarjeta__foto tarjeta__foto--alt" src="<%= p.imagenes[1].ruta %>" alt="" loading="lazy">
+      <% } %>
+    </a>
+    <% const esFav = (locals.favoritosIds || []).includes(p.id); %>
+    <button class="tarjeta__fav <%= esFav ? 'activo' : '' %>" data-fav-id="<%= p.id %>" aria-pressed="<%= esFav %>" aria-label="<%= esFav ? 'Quitar de favoritos' : 'Agregar a favoritos' %>">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+    <% if (p.stock > 0) { %>
+      <% if (p.talles && p.talles.length) { %>
+        <a class="tarjeta__agregar" href="/producto/<%= p.id %>">Elegir talle</a>
+      <% } else { %>
+        <button class="tarjeta__agregar" data-agregar>Agregar al carrito</button>
+      <% } %>
+    <% } %>
+  </div>
+
+  <div class="tarjeta__info">
+    <p class="tarjeta__categoria"><%= p.categoria %><% if (p.talles && p.talles.length) { %> <span class="tarjeta__talles"><%= p.talles.join(' · ') %></span><% } %></p>
+    <h3 class="tarjeta__nombre"><a href="/producto/<%= p.id %>"><%= p.nombre %></a></h3>
+    <p class="tarjeta__precio"><%= formatoPrecio(p.precio) %></p>
+    <p class="tarjeta__transferencia">
+      <%= formatoPrecio(p.precio * (1 - descuentoTransferencia)) %> <span>con transferencia</span>
+    </p>
+  </div>
+</article>

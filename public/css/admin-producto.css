@@ -1,0 +1,209 @@
+/* ==========================================================
+   ADMIN · FICHA DE PRODUCTO — Estilos propios (usa base.css + admin.css)
+   (Esta vista no necesita JS propio: el borrado usa el modal de admin.js)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.admin-cabecera__bajada .stock-tag {
+  vertical-align: middle;
+}
+
+.ficha-admin {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.ficha-admin__imagen {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 5;
+  max-height: 520px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 16px, rgba(0, 0, 0, 0.035) 16px 17px),
+    var(--blanco);
+  border: 1px solid var(--gris-200);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--gris-600);
+}
+
+.ficha-admin__imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ficha-admin__miniaturas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+  list-style: none;
+}
+
+.ficha-admin__miniaturas li {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--gris-200);
+}
+
+.ficha-admin__miniaturas li:first-child {
+  border: 2px solid var(--negro);
+}
+
+.ficha-admin__miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ficha-admin__cantidad {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.ficha-admin__cantidad a {
+  color: var(--negro);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ficha-admin__etiqueta {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ficha-admin__datos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ficha-kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ficha-kpis .kpi__valor {
+  white-space: nowrap;
+}
+
+.kpi--oscuro {
+  background: var(--negro);
+  border-color: var(--negro);
+  color: var(--blanco);
+}
+
+.kpi--oscuro .kpi__label,
+.kpi--oscuro .kpi__detalle {
+  color: var(--gris-400);
+}
+
+.ficha-admin .panel__titulo {
+  margin-bottom: 12px;
+}
+
+.ficha-lista div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-100);
+  font-size: 14px;
+}
+
+.ficha-lista dt {
+  color: var(--gris-600);
+}
+
+.ficha-lista dd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: right;
+}
+
+.punto-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muestra);
+  border: 1px solid var(--gris-400);
+}
+
+/* Zona de borrado */
+.zona-peligro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--negro);
+  border-left-width: 4px;
+  background: var(--blanco);
+}
+
+.zona-peligro p {
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.zona-peligro .btn:hover {
+  background: var(--negro);
+  color: var(--blanco);
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .ficha-admin {
+    grid-template-columns: 280px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .zona-peligro {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .ficha-admin {
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .ficha-admin__fotos {
+    position: sticky;
+    top: 32px;
+  }
+
+  .ficha-kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ficha-kpis .kpi__valor {
+    font-size: 24px;
+  }
+}

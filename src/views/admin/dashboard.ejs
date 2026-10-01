@@ -1,0 +1,209 @@
+<%- include('../partials/admin-inicio') %>
+
+<%
+  const variacion = m.gananciaAnterior ? (m.ganancia - m.gananciaAnterior) / m.gananciaAnterior : null;
+  const maxTop = Math.max(1, ...m.topProductos.map(t => t.ganancia));
+  const serieJSON = m.serie.map(d => ({
+    fecha: d.fecha.toISOString(), ingresos: d.ingresos, costo: d.costo, ganancia: d.ganancia, pedidos: d.pedidos,
+  }));
+%>
+
+      <div class="admin-cabecera">
+        <div>
+          <p class="admin-cabecera__migas">Panel de administración</p>
+          <h1 class="admin-cabecera__titulo">Hola, <%= usuario.nombre %></h1>
+          <p class="admin-cabecera__bajada">Así vienen las ventas de los últimos <%= m.dias %> días.</p>
+        </div>
+
+        <nav class="segmentado" aria-label="Período">
+          <% [7, 14, 30].forEach(d => { %>
+            <a href="/admin?dias=<%= d %>" class="<%= m.dias === d ? 'activo' : '' %>" <%- m.dias === d ? 'aria-current="true"' : '' %>><%= d %> días</a>
+          <% }) %>
+        </nav>
+      </div>
+
+      <!-- ═════════════ INDICADORES ═════════════ -->
+      <section class="kpis" aria-label="Indicadores principales">
+        <div class="kpi kpi--principal">
+          <span class="kpi__label">Ganancia</span>
+          <span class="kpi__valor"><%= formatoPrecio(m.ganancia) %></span>
+          <span class="kpi__detalle">
+            <% if (variacion !== null) { %>
+              <span class="kpi__delta"><%= variacion >= 0 ? '▲' : '▼' %> <%= formatoPorcentaje(Math.abs(variacion)) %></span>
+              <%= variacion >= 0 ? 'más' : 'menos' %> que los <%= m.dias %> días anteriores
+            <% } else { %>
+              Sin datos del período anterior
+            <% } %>
+          </span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Ingresos</span>
+          <span class="kpi__valor"><%= formatoCompacto(m.ingresos) %></span>
+          <span class="kpi__detalle">Costo de mercadería <%= formatoCompacto(m.costo) %></span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Margen</span>
+          <span class="kpi__valor"><%= formatoPorcentaje(m.margen) %></span>
+          <span class="kpi__detalle">De cada $100 vendidos</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Pedidos</span>
+          <span class="kpi__valor"><%= m.pedidos %></span>
+          <span class="kpi__detalle"><%= m.unidades %> unidades vendidas</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Ticket promedio</span>
+          <span class="kpi__valor"><%= formatoCompacto(m.ticketPromedio) %></span>
+          <span class="kpi__detalle">Por pedido</span>
+        </div>
+      </section>
+
+      <!-- ═════════════ GRÁFICO DIARIO ═════════════ -->
+      <section class="panel grafico" aria-labelledby="tituloGrafico">
+        <div class="panel__cabecera">
+          <div>
+            <h2 class="panel__titulo" id="tituloGrafico">Ingresos por día</h2>
+            <p class="panel__bajada">Cada barra es lo vendido en el día: la parte negra es ganancia, la gris el costo.</p>
+          </div>
+          <div class="grafico__controles">
+            <ul class="leyenda" aria-label="Referencias">
+              <li><span class="leyenda__muestra leyenda__muestra--ganancia"></span> Ganancia</li>
+              <li><span class="leyenda__muestra leyenda__muestra--costo"></span> Costo</li>
+            </ul>
+            <button type="button" class="panel__link grafico__vista" id="verTabla" aria-pressed="false">Ver tabla</button>
+          </div>
+        </div>
+
+        <div class="grafico__lienzo" id="grafico" role="img" aria-label="Gráfico de ingresos, costo y ganancia por día. La tabla con los mismos datos está disponible con el botón Ver tabla.">
+          <p class="grafico__cargando">Cargando gráfico…</p>
+        </div>
+        <div class="grafico__tooltip" id="tooltip" hidden></div>
+
+        <div class="grafico__tabla" id="tablaGrafico" hidden>
+          <table class="tabla">
+            <thead>
+              <tr><th>Día</th><th class="num">Pedidos</th><th class="num">Ingresos</th><th class="num">Costo</th><th class="num">Ganancia</th></tr>
+            </thead>
+            <tbody>
+              <% m.serie.slice().reverse().forEach(d => { %>
+                <tr>
+                  <td><%= formatoFecha(d.fecha) %></td>
+                  <td class="num"><%= d.pedidos %></td>
+                  <td class="num"><%= formatoPrecio(d.ingresos) %></td>
+                  <td class="num"><%= formatoPrecio(d.costo) %></td>
+                  <td class="num"><strong><%= formatoPrecio(d.ganancia) %></strong></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+
+        <script type="application/json" id="datosGrafico"><%- JSON.stringify(serieJSON) %></script>
+      </section>
+
+      <div class="dashboard__fila">
+        <!-- ═════════════ MÁS RENTABLES ═════════════ -->
+        <section class="panel" aria-labelledby="tituloTop">
+          <div class="panel__cabecera">
+            <div>
+              <h2 class="panel__titulo" id="tituloTop">Los que más ganancia dejan</h2>
+              <p class="panel__bajada">Últimos <%= m.dias %> días</p>
+            </div>
+            <a href="/admin/productos?orden=margen-desc" class="panel__link">Ver productos</a>
+          </div>
+
+          <% if (m.topProductos.length) { %>
+            <ol class="ranking">
+              <% m.topProductos.forEach((t, n) => { %>
+                <li class="ranking__item">
+                  <div class="ranking__texto">
+                    <span class="ranking__pos"><%= n + 1 %></span>
+                    <a href="/admin/productos/<%= t.id %>" class="ranking__nombre"><%= t.nombre %></a>
+                    <span class="ranking__unidades"><%= t.unidades %> u.</span>
+                  </div>
+                  <div class="ranking__barra">
+                    <span style="width: <%= Math.max(2, (t.ganancia / maxTop) * 100) %>%"></span>
+                    <strong><%= formatoCompacto(t.ganancia) %></strong>
+                  </div>
+                </li>
+              <% }) %>
+            </ol>
+          <% } else { %>
+            <p class="panel__bajada">Todavía no hay ventas en este período.</p>
+          <% } %>
+        </section>
+
+        <!-- ═════════════ STOCK ═════════════ -->
+        <section class="panel" aria-labelledby="tituloStock">
+          <div class="panel__cabecera">
+            <div>
+              <h2 class="panel__titulo" id="tituloStock">Stock</h2>
+              <p class="panel__bajada"><%= stock.unidades %> unidades en depósito</p>
+            </div>
+            <a href="/admin/productos?orden=stock-asc" class="panel__link">Gestionar</a>
+          </div>
+
+          <dl class="stock-resumen">
+            <div><dt>Valor al costo</dt><dd><%= formatoCompacto(stock.valorCosto) %></dd></div>
+            <div><dt>Valor de venta</dt><dd><%= formatoCompacto(stock.valorVenta) %></dd></div>
+            <div><dt>Sin stock</dt><dd><%= stock.sinStock.length %></dd></div>
+            <div><dt>Stock bajo</dt><dd><%= stock.bajo.length %></dd></div>
+          </dl>
+
+          <% const alertas = [...stock.sinStock, ...stock.bajo]; %>
+          <% if (alertas.length) { %>
+            <p class="stock-alertas__titulo">Para reponer</p>
+            <ul class="stock-alertas">
+              <% alertas.forEach(p => { %>
+                <li>
+                  <a href="/admin/productos/<%= p.id %>"><%= p.nombre %></a>
+                  <span class="medidor" title="<%= p.stock %> de <%= STOCK_BAJO * 2 %>">
+                    <span style="width: <%= Math.min(100, (p.stock / (STOCK_BAJO * 2)) * 100) %>%"></span>
+                  </span>
+                  <span class="stock-tag <%= p.stock === 0 ? 'stock-tag--sin' : 'stock-tag--bajo' %>">
+                    <%= p.stock === 0 ? 'Sin stock' : p.stock + ' u.' %>
+                  </span>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="panel__bajada">Todo el catálogo tiene stock suficiente.</p>
+          <% } %>
+        </section>
+      </div>
+
+      <!-- ═════════════ ÚLTIMOS PEDIDOS ═════════════ -->
+      <section class="panel" aria-labelledby="tituloPedidos">
+        <div class="panel__cabecera">
+          <div>
+            <h2 class="panel__titulo" id="tituloPedidos">Últimos pedidos</h2>
+            <p class="panel__bajada"><%= m.pendientes %> esperando preparación o envío</p>
+          </div>
+          <a href="/admin/pedidos" class="panel__link">Ver todos</a>
+        </div>
+
+        <div class="tabla-scroll">
+          <table class="tabla tabla--pedidos">
+            <thead>
+              <tr><th>Pedido</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th class="num">Total</th><th class="num">Ganancia</th></tr>
+            </thead>
+            <tbody>
+              <% ultimos.forEach(p => { %>
+                <tr>
+                  <td><strong>#<%= p.numero %></strong></td>
+                  <td><%= p.cliente %></td>
+                  <td><%= formatoFecha(p.fecha, true) %></td>
+                  <td><span class="estado estado--<%= p.estado %>"><%= p.estado %></span></td>
+                  <td class="num"><%= formatoPrecio(p.total) %></td>
+                  <td class="num"><%= p.estado === 'cancelado' ? '—' : formatoPrecio(p.ganancia) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+<%- include('../partials/admin-fin') %>
+<script src="/js/admin-dashboard.js"></script>
+</body>
+</html>

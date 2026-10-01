@@ -1,0 +1,201 @@
+/* ==========================================================
+   MIS PEDIDOS — Estilos propios (usa base.css + cuenta.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.filtros-pedidos {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filtros-pedidos::-webkit-scrollbar {
+  display: none;
+}
+
+.filtros-pedidos__btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--gris-200);
+  background: var(--blanco);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color var(--transicion), background var(--transicion), color var(--transicion);
+}
+
+.filtros-pedidos__btn small {
+  font-size: 11px;
+  color: var(--gris-600);
+}
+
+.filtros-pedidos__btn:hover:not(:disabled) {
+  border-color: var(--negro);
+}
+
+.filtros-pedidos__btn.activo {
+  background: var(--negro);
+  border-color: var(--negro);
+  color: var(--blanco);
+}
+
+.filtros-pedidos__btn.activo small {
+  color: var(--gris-400);
+}
+
+.filtros-pedidos__btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ---------- Tarjeta de pedido ---------- */
+.lista-pedidos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.pedido-tarjeta {
+  display: flex;
+  flex-direction: column;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  transition: border-color var(--transicion);
+}
+
+.pedido-tarjeta[hidden] {
+  display: none;
+}
+
+.pedido-tarjeta:hover {
+  border-color: var(--gris-400);
+}
+
+.pedido-tarjeta__cabeza {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.pedido-tarjeta__numero {
+  font-family: var(--fuente-titulos);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.pedido-tarjeta__fecha {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.pedido-tarjeta__cuerpo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.miniaturas {
+  display: flex;
+  gap: 8px;
+}
+
+.miniatura--mas {
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  font-size: 13px;
+  color: var(--negro);
+}
+
+.pedido-tarjeta__nombres {
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--gris-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pedido-tarjeta__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.pedido-tarjeta__total {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 8px;
+  align-items: baseline;
+}
+
+.pedido-tarjeta__total span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.pedido-tarjeta__total strong {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pedido-tarjeta__total small {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.pedido-tarjeta__acciones {
+  display: flex;
+  gap: 8px;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px — cabecera, productos y total en una fila
+   ========================================================== */
+@media (min-width: 768px) {
+  .pedido-tarjeta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .pedido-tarjeta__cabeza {
+    grid-column: 1 / -1;
+    padding: 18px 22px;
+  }
+
+  .pedido-tarjeta__cuerpo {
+    padding: 18px 22px;
+  }
+
+  .pedido-tarjeta__pie {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 18px 22px;
+  }
+
+  .pedido-tarjeta__total {
+    text-align: right;
+  }
+
+  .miniatura {
+    width: 64px;
+  }
+}

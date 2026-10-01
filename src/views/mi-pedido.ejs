@@ -1,0 +1,206 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const p = pedido;
+  const s = situacionPedido(p);
+  const pasos = pasosPedido(p);
+  const primerNombre = String(p.cliente).split(" ")[0];
+  const esTransferencia = p.medioPago === "transferencia";
+  const esperaTransferencia = esTransferencia && p.estado === "pendiente" && p.pagoEstado !== "aprobado";
+  const unidades = p.items.reduce((acc, i) => acc + i.cantidad, 0);
+
+  // Mensaje grande de arriba: depende de cómo volvió de Mercado Pago o del estado
+  let titulo, bajada;
+  if (resultado === "aprobado" || (resultado === null && p.pagoEstado === "aprobado" && p.estado === "pagado")) {
+    titulo = `¡Gracias, ${primerNombre}!`;
+    bajada = "Tu pago fue aprobado y ya estamos preparando tu pedido. Te escribimos por email con cada novedad.";
+  } else if (resultado === "rechazado" || (p.pagoEstado === "rechazado" && p.estado === "pendiente")) {
+    titulo = "El pago no se pudo completar";
+    bajada = motivo || "No se hizo ningún cobro. Podés intentar de nuevo con otra tarjeta u otro medio.";
+  } else if (esperaTransferencia) {
+    titulo = `¡Gracias, ${primerNombre}!`;
+    bajada = "Tu pedido quedó reservado. Transferí el total a la cuenta de abajo y lo preparamos apenas se acredite.";
+  } else if (p.estado === "pendiente" && p.pagoEstado === "pendiente" && !p.pagoId && resultado !== "pendiente") {
+    titulo = "Falta pagar tu pedido";
+    bajada = `Lo tenemos reservado por ${venceHoras} hs. Pagalo con tarjeta cuando quieras desde esta página.`;
+  } else if (resultado === "pendiente" || (p.estado === "pendiente" && p.pagoEstado === "pendiente")) {
+    titulo = "Tu pago está en proceso";
+    bajada = "Mercado Pago está revisando el pago. Te avisamos por email cuando se acredite; no hace falta que pagues de nuevo.";
+  } else {
+    titulo = `Pedido #${p.numero}`;
+    bajada = s.detalle;
+  }
+%>
+
+  <section class="cuenta-hero contenedor">
+    <nav class="migas" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <% if (conCuenta) { %><a href="/mi-cuenta/pedidos">Mis pedidos</a><span>/</span><% } %>
+      <span aria-current="page">Pedido #<%= p.numero %></span>
+    </nav>
+  </section>
+
+  <main class="contenedor cuenta-cuerpo detalle">
+
+    <!-- ═════════════ ESTADO ═════════════ -->
+    <section class="detalle-estado detalle-estado--<%= s.clave %>" aria-live="polite">
+      <div class="detalle-estado__texto">
+        <p class="detalle-estado__numero">Pedido #<%= p.numero %> · <%= formatoFecha(p.fecha, true) %></p>
+        <h1 class="detalle-estado__titulo"><%= titulo %></h1>
+        <p class="detalle-estado__bajada"><%= bajada %></p>
+
+        <div class="detalle-estado__acciones">
+          <% if (sePuedePagar) { %>
+            <form action="/pedido/<%= p.numero %>/pagar" method="POST">
+              <button type="submit" class="btn btn--solido" data-pagar>
+                <%= p.pagoEstado === 'rechazado' ? 'Intentar de nuevo' : 'Pagar ahora' %> · <%= formatoPrecio(p.total) %>
+              </button>
+            </form>
+          <% } %>
+          <a href="/catalogo" class="btn btn--linea">Seguir comprando</a>
+        </div>
+        <% if (sePuedePagar && modoPago === 'demo') { %>
+          <p class="detalle-estado__nota">Modo demostración: el pago se simula, no se cobra nada.</p>
+        <% } %>
+      </div>
+
+      <span class="estado-cliente estado-cliente--<%= s.clave %>"><%= s.texto %></span>
+    </section>
+
+    <!-- ═════════════ LÍNEA DE TIEMPO ═════════════ -->
+    <% if (p.estado !== "cancelado") { %>
+      <ol class="linea-tiempo" aria-label="Seguimiento del pedido">
+        <% pasos.forEach((paso) => { %>
+          <li class="linea-tiempo__paso <%= paso.hecho ? 'hecho' : '' %> <%= paso.actual ? 'actual' : '' %>" <%- paso.actual ? 'aria-current="step"' : '' %>>
+            <span class="linea-tiempo__punto" aria-hidden="true"></span>
+            <span class="linea-tiempo__texto"><%= paso.texto %></span>
+            <% if (paso.hecho && paso.fecha) { %><small><%= formatoFecha(paso.fecha) %></small><% } %>
+          </li>
+        <% }) %>
+      </ol>
+    <% } %>
+
+    <div class="detalle-grilla">
+      <div class="detalle-principal">
+
+        <!-- ═════════════ DATOS PARA TRANSFERIR ═════════════ -->
+        <% if (esperaTransferencia) { %>
+          <section class="transferencia" aria-labelledby="tituloTransferencia">
+            <h2 class="detalle-titulo" id="tituloTransferencia">Datos para transferir</h2>
+            <p class="transferencia__monto">
+              <span>Monto exacto</span>
+              <strong data-copiar-valor="<%= Number(p.total).toFixed(2).replace('.', ',') %>"><%= formatoPrecio(p.total) %></strong>
+              <button type="button" class="copiar" data-copiar>Copiar</button>
+            </p>
+            <dl class="transferencia__datos">
+              <div><dt>Alias</dt><dd data-copiar-valor="<%= transferencia.alias %>"><%= transferencia.alias %></dd><button type="button" class="copiar" data-copiar>Copiar</button></div>
+              <div><dt>CBU / CVU</dt><dd data-copiar-valor="<%= transferencia.cbu %>"><%= transferencia.cbu %></dd><button type="button" class="copiar" data-copiar>Copiar</button></div>
+              <div><dt>Titular</dt><dd><%= transferencia.titular %></dd></div>
+              <div><dt>Banco</dt><dd><%= transferencia.banco %></dd></div>
+            </dl>
+            <p class="transferencia__nota">
+              Poné <strong>#<%= p.numero %></strong> en el concepto y mandanos el comprobante por WhatsApp o respondiendo el email del pedido.
+            </p>
+          </section>
+        <% } %>
+
+        <!-- ═════════════ PRODUCTOS ═════════════ -->
+        <section>
+          <h2 class="detalle-titulo">Productos <small>(<%= unidades %>)</small></h2>
+          <ul class="detalle-items">
+            <% p.items.forEach((i, n) => { %>
+              <li class="detalle-item">
+                <span class="miniatura <%= n % 2 ? 'miniatura--oscura' : '' %>">
+                  <% if (i.imagen) { %><img src="<%= i.imagen %>" alt="" loading="lazy"><% } else { %><span>(IMG)</span><% } %>
+                </span>
+                <span class="detalle-item__info">
+                  <% if (i.productoId) { %>
+                    <a href="/producto/<%= i.productoId %>" class="detalle-item__nombre"><%= i.nombre %></a>
+                  <% } else { %>
+                    <span class="detalle-item__nombre"><%= i.nombre %></span>
+                  <% } %>
+                  <small><%= i.color ? `Color: ${i.color} · ` : '' %><%= i.talle ? `Talle: ${i.talle} · ` : '' %><%= i.cantidad %> × <%= formatoPrecio(i.precio) %></small>
+                </span>
+                <span class="detalle-item__precio"><%= formatoPrecio(i.precio * i.cantidad) %></span>
+              </li>
+            <% }) %>
+          </ul>
+
+          <dl class="detalle-totales">
+            <div><dt>Subtotal</dt><dd><%= formatoPrecio(p.subtotal) %></dd></div>
+            <% if (Number(p.descuento)) { %>
+              <div><dt>Descuentos<%= p.cuponCodigo ? ` (cupón ${p.cuponCodigo})` : '' %></dt><dd>-<%= formatoPrecio(p.descuento) %></dd></div>
+            <% } %>
+            <div><dt>Envío</dt><dd><%= Number(p.envio) ? formatoPrecio(p.envio) : 'Gratis' %></dd></div>
+            <div class="detalle-totales__total"><dt>Total</dt><dd><%= formatoPrecio(p.total) %></dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <!-- ═════════════ DATOS DEL PEDIDO ═════════════ -->
+      <aside class="detalle-lateral">
+        <section class="ficha">
+          <h2 class="ficha__titulo">Pago</h2>
+          <p><strong><%= esTransferencia ? 'Transferencia bancaria' : 'Tarjeta · Mercado Pago' %></strong></p>
+          <% if (p.pagoDetalle) { %><p><%= p.pagoDetalle %></p><% } %>
+          <p class="ficha__estado ficha__estado--<%= p.pagoEstado %>">
+            <%= { pendiente: 'Pendiente', aprobado: 'Aprobado', rechazado: 'Rechazado', reembolsado: 'Reembolsado' }[p.pagoEstado] %>
+            <% if (p.pagadoEn && p.pagoEstado === 'aprobado') { %> · <%= formatoFecha(p.pagadoEn, true) %><% } %>
+          </p>
+        </section>
+
+        <section class="ficha">
+          <h2 class="ficha__titulo"><%= p.entrega === 'retiro' ? 'Retiro' : 'Envío' %></h2>
+          <% if (p.entrega === 'retiro') { %>
+            <p>Retiro en el showroom</p>
+            <p>(DIRECCIÓN DEL SHOWROOM)</p>
+          <% } else { %>
+            <p><%= p.calle %> <%= p.altura %><%= p.piso ? `, ${p.piso}` : '' %></p>
+            <p><%= p.ciudad %>, <%= p.provincia %> (<%= p.codigoPostal %>)</p>
+          <% } %>
+          <% if (p.notas) { %><p class="ficha__nota">“<%= p.notas %>”</p><% } %>
+        </section>
+
+        <section class="ficha">
+          <h2 class="ficha__titulo">Contacto y factura</h2>
+          <p><%= p.cliente %></p>
+          <p><%= p.email %><%= p.telefono ? ` · ${p.telefono}` : '' %></p>
+          <p><%= p.facturacion === 'facturaA' ? `Factura A · ${p.razonSocial} (${p.cuit})` : 'Consumidor final' %></p>
+        </section>
+
+        <% if (sePuedeCancelar) { %>
+          <form action="/pedido/<%= p.numero %>/cancelar" method="POST" class="ficha ficha--cancelar" id="formCancelar">
+            <p>¿Te arrepentiste? Mientras no esté pago lo podés cancelar.</p>
+            <button type="submit" class="ficha__cancelar">Cancelar pedido</button>
+          </form>
+        <% } %>
+
+        <% if (!conCuenta) { %>
+          <section class="ficha ficha--cuenta">
+            <p><strong>Seguí tus pedidos desde cualquier lugar.</strong></p>
+            <p>Creá una cuenta con <%= p.email %> para ver este y tus próximos pedidos.</p>
+            <a href="/registro" class="btn btn--linea btn--chico">Crear cuenta</a>
+          </section>
+        <% } %>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Confirmación para cancelar -->
+  <div class="confirmar" id="confirmarCancelar" role="dialog" aria-modal="true" aria-labelledby="confirmarTitulo" hidden>
+    <div class="confirmar__caja">
+      <p class="confirmar__titulo" id="confirmarTitulo">¿Cancelar el pedido #<%= p.numero %>?</p>
+      <p class="confirmar__texto">No se te va a cobrar nada y los productos vuelven a estar disponibles.</p>
+      <div class="confirmar__acciones">
+        <button type="button" class="btn btn--linea" data-cerrar>Volver</button>
+        <button type="button" class="btn btn--solido" data-aceptar>Sí, cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="/js/mi-pedido.js"></script>
+</body>
+</html>

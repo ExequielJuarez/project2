@@ -1,0 +1,22 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <main class="contenedor error-cuenta">
+    <p class="error-cuenta__codigo"><%= locals.codigo || 404 %></p>
+    <h1 class="error-cuenta__titulo"><%= titulo %></h1>
+    <p class="error-cuenta__texto"><%= mensaje %></p>
+    <div class="error-cuenta__acciones">
+      <% if (locals.general) { %>
+        <a href="/catalogo" class="btn btn--solido">Ver el catálogo</a>
+      <% } else if (locals.usuarioLocal) { %>
+        <a href="/mi-cuenta/pedidos" class="btn btn--solido">Ir a mis pedidos</a>
+      <% } else { %>
+        <a href="/login?volver=/mi-cuenta/pedidos" class="btn btn--solido">Iniciar sesión</a>
+      <% } %>
+      <a href="/" class="btn btn--linea">Volver al inicio</a>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const hayErrores = Object.keys(errores).length > 0;
+  const hayErroresClave = Object.keys(erroresClave).length > 0;
+%>
+
+  <%- include('partials/cuenta-nav') %>
+
+  <main class="contenedor cuenta-cuerpo mis-datos">
+
+    <form action="/mi-cuenta/datos" method="POST" class="mis-datos__form" id="formDatos" novalidate>
+      <% if (hayErrores) { %>
+        <div class="aviso aviso--error" role="alert" id="resumenErrores" tabindex="-1">
+          <strong>Revisá estos datos:</strong>
+          <ul>
+            <% Object.entries(errores).forEach(([campo, e]) => { %>
+              <li><a href="#<%= campo %>"><%= e.msg %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <!-- Datos personales -->
+      <section class="panel-cuenta">
+        <div class="panel-cuenta__cabeza">
+          <h2 class="panel-cuenta__titulo">Datos personales</h2>
+          <p class="panel-cuenta__bajada">Los usamos para tus pedidos y para avisarte cómo vienen.</p>
+        </div>
+        <div class="campos-cuenta">
+          <%- include('partials/campo', { nombre: 'nombre', etiqueta: 'Nombre', attrs: 'autocomplete="given-name" maxlength="40" required' }) %>
+          <%- include('partials/campo', { nombre: 'apellido', etiqueta: 'Apellido', attrs: 'autocomplete="family-name" maxlength="40" required' }) %>
+          <%- include('partials/campo', { nombre: 'email', etiqueta: 'Email', tipo: 'email', clase: 'campo--completo', attrs: 'autocomplete="email" required' }) %>
+          <%- include('partials/campo', { nombre: 'telefono', etiqueta: 'Teléfono', tipo: 'tel', opcional: true, placeholder: '11 5555 4444', attrs: 'autocomplete="tel"' }) %>
+          <%- include('partials/campo', { nombre: 'dni', etiqueta: 'DNI', opcional: true, placeholder: 'Sin puntos', attrs: 'inputmode="numeric" autocomplete="off"' }) %>
+        </div>
+        <% if (perfil.googleId) { %>
+          <p class="panel-cuenta__nota">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v5M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Tu cuenta está vinculada con Google.
+          </p>
+        <% } %>
+      </section>
+
+      <!-- Dirección -->
+      <section class="panel-cuenta">
+        <div class="panel-cuenta__cabeza">
+          <h2 class="panel-cuenta__titulo">Dirección de envío</h2>
+          <p class="panel-cuenta__bajada">La completamos sola cuando comprás. Podés dejarla vacía.</p>
+        </div>
+        <div class="campos-cuenta">
+          <%- include('partials/campo', { nombre: 'calle', etiqueta: 'Calle', clase: 'campo--ancho', attrs: 'autocomplete="address-line1" maxlength="90"' }) %>
+          <%- include('partials/campo', { nombre: 'numero', etiqueta: 'Altura', placeholder: '1234 o S/N', clase: 'campo--angosto', attrs: 'maxlength="6"' }) %>
+          <%- include('partials/campo', { nombre: 'piso', etiqueta: 'Piso / Depto', opcional: true, placeholder: 'Ej: 3° B', attrs: 'autocomplete="address-line2" maxlength="20"' }) %>
+          <%- include('partials/campo', { nombre: 'codigoPostal', etiqueta: 'Código postal', placeholder: '1405', attrs: 'inputmode="numeric" maxlength="4" autocomplete="postal-code"' }) %>
+          <%- include('partials/campo', { nombre: 'ciudad', etiqueta: 'Ciudad / Localidad', attrs: 'autocomplete="address-level2" maxlength="80"' }) %>
+          <%- include('partials/campo', { nombre: 'provincia', etiqueta: 'Provincia', tipo: 'select', opciones: provincias }) %>
+        </div>
+        <button type="button" class="panel-cuenta__borrar" id="btnBorrarDireccion" <%= datos.calle ? '' : 'hidden' %>>Borrar dirección guardada</button>
+      </section>
+
+      <div class="mis-datos__acciones" id="accionesDatos">
+        <p class="mis-datos__estado" id="estadoDatos" aria-live="polite"></p>
+        <button type="submit" class="btn btn--solido" id="btnGuardarDatos">Guardar cambios</button>
+      </div>
+    </form>
+
+    <!-- Contraseña -->
+    <section class="panel-cuenta panel-cuenta--clave" id="clave">
+      <div class="panel-cuenta__cabeza">
+        <h2 class="panel-cuenta__titulo"><%= perfil.tieneClave ? 'Contraseña' : 'Crear contraseña' %></h2>
+        <p class="panel-cuenta__bajada">
+          <%= perfil.tieneClave
+                ? 'Usá al menos 8 caracteres, con letras y números.'
+                : 'Entrás con Google. Si querés, creá una contraseña para entrar también con tu email.' %>
+        </p>
+      </div>
+
+      <details class="clave-desplegable" <%= abrir === 'clave' || hayErroresClave ? 'open' : '' %>>
+        <summary class="btn btn--linea btn--chico"><%= perfil.tieneClave ? 'Cambiar contraseña' : 'Crear contraseña' %></summary>
+        <form action="/mi-cuenta/clave" method="POST" class="clave-form" id="formClave" novalidate>
+          <% if (perfil.tieneClave) { %>
+            <%- include('partials/campo-clave', { nombre: 'actual', etiqueta: 'Contraseña actual', autocomplete: 'current-password', errores: erroresClave }) %>
+          <% } %>
+          <%- include('partials/campo-clave', { nombre: 'nueva', etiqueta: 'Contraseña nueva', autocomplete: 'new-password', errores: erroresClave }) %>
+          <%- include('partials/campo-clave', { nombre: 'confirmar', etiqueta: 'Repetí la contraseña nueva', autocomplete: 'new-password', errores: erroresClave }) %>
+          <button type="submit" class="btn btn--solido">Guardar contraseña</button>
+        </form>
+      </details>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/mis-datos.js"></script>
+</body>
+</html>

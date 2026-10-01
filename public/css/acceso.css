@@ -1,0 +1,305 @@
+/* ==========================================================
+   ACCESO — Estructura compartida por login y registro
+   (panel de marca + formulario, contraseña, botones sociales)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.migas--acceso {
+  padding: 18px 0;
+}
+
+.acceso {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-bottom: 64px;
+}
+
+/* ==========================================================
+   PANEL DE MARCA
+   ========================================================== */
+.acceso__panel {
+  display: none;
+}
+
+.acceso__panel-imagen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(45deg, transparent 0 18px, rgba(255, 255, 255, 0.04) 18px 19px);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--gris-600);
+}
+
+.acceso__panel-texto {
+  position: relative;
+}
+
+.acceso__etiqueta {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gris-400);
+}
+
+.acceso__frase {
+  margin-top: 12px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 500;
+  line-height: 1.02;
+  color: var(--blanco);
+}
+
+.acceso__frase em {
+  color: var(--gris-400);
+}
+
+.acceso__beneficios {
+  margin-top: 28px;
+  border-top: 1px solid var(--gris-900);
+}
+
+.acceso__beneficios li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gris-900);
+  font-size: 14px;
+  color: var(--gris-200);
+}
+
+.acceso__beneficios span {
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  color: var(--gris-600);
+}
+
+/* ==========================================================
+   FORMULARIO
+   ========================================================== */
+.acceso__form {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding-top: 8px;
+}
+
+.acceso__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(42px, 9vw, 64px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+.acceso__bajada {
+  margin: 10px 0 28px;
+  color: var(--gris-600);
+}
+
+.acceso__campos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.acceso__olvido {
+  font-size: 12px;
+  color: var(--gris-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.acceso__olvido:hover {
+  color: var(--negro);
+}
+
+/* Contraseña con botón para mostrarla (lo maneja base.js) */
+.clave {
+  position: relative;
+}
+
+.clave .campo__control {
+  padding-right: 52px;
+}
+
+.clave__ver {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: var(--gris-600);
+}
+
+.clave__ver:hover {
+  color: var(--negro);
+}
+
+.clave__ojo-tachado,
+.clave__ver[aria-pressed="true"] .clave__ojo {
+  display: none;
+}
+
+.clave__ver[aria-pressed="true"] .clave__ojo-tachado {
+  display: block;
+}
+
+.clave__mayus {
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.clave__mayus::before {
+  content: "⇪ ";
+}
+
+.clave__mayus[hidden] {
+  display: none;
+}
+
+.acceso__campos .check-simple {
+  margin-top: 0;
+}
+
+.acceso__enviar {
+  width: 100%;
+  height: 54px;
+  margin-top: 4px;
+}
+
+.acceso__enviar[disabled] {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Separador "o" */
+.separador {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gris-400);
+}
+
+.separador::before,
+.separador::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--gris-200);
+}
+
+.acceso__sociales {
+  display: grid;
+  gap: 10px;
+}
+
+.acceso__sociales .btn {
+  width: 100%;
+  height: 50px;
+  background: var(--blanco);
+  font-size: 11px;
+}
+
+.acceso__sociales .btn:hover {
+  background: var(--negro);
+}
+
+.acceso__registro {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--negro);
+  font-size: 14px;
+  text-align: center;
+  color: var(--gris-600);
+}
+
+.acceso__registro a {
+  margin-left: 4px;
+  font-weight: 600;
+  color: var(--negro);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .migas--acceso {
+    padding: 24px 0;
+  }
+
+  .acceso {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: stretch;
+    padding-bottom: 88px;
+  }
+
+  .acceso__panel {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 560px;
+    padding: 36px 32px;
+    overflow: hidden;
+    background: var(--negro);
+  }
+
+  .acceso__panel-imagen {
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .acceso__form {
+    max-width: none;
+    margin: 0;
+    padding-top: 12px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .acceso {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 96px;
+    padding-bottom: 112px;
+  }
+
+  .acceso__panel {
+    min-height: 680px;
+    padding: 56px;
+  }
+
+  .acceso__panel-imagen {
+    align-items: center;
+    padding-top: 0;
+  }
+
+  .acceso__form {
+    max-width: 460px;
+    padding-top: 48px;
+  }
+}

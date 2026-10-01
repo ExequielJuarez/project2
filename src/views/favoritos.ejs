@@ -1,0 +1,74 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const conStock = productos.filter(p => p.stock > 0).length;
+  const valorTotal = productos.reduce((acc, p) => acc + p.precio, 0);
+%>
+
+  <!-- ═════════════ ENCABEZADO ═════════════ -->
+  <section class="favoritos-hero contenedor">
+    <nav class="migas" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <span aria-current="page">Favoritos</span>
+    </nav>
+
+    <div class="favoritos-hero__fila">
+      <div>
+        <h1 class="favoritos-hero__titulo">
+          Tus favoritos
+          <sup class="favoritos-hero__cantidad" id="cantidadTitulo"><%= productos.length %></sup>
+        </h1>
+        <p class="favoritos-hero__texto">Lo que te gustó, guardado para cuando lo necesites.</p>
+      </div>
+
+      <div class="favoritos-hero__acciones" id="accionesFavoritos" <%= productos.length ? '' : 'hidden' %>>
+        <button class="btn btn--solido" id="btnTodosAlCarrito" <%= conStock ? '' : 'disabled' %>>
+          Agregar todo al carrito
+        </button>
+        <button class="favoritos-hero__vaciar" id="btnVaciarFavoritos">Vaciar lista</button>
+      </div>
+    </div>
+
+    <% if (!locals.usuarioLocal && productos.length) { %>
+      <p class="favoritos-aviso" id="avisoInvitado">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>
+          Tus favoritos se guardan en este navegador.
+          <a href="/login?volver=/favoritos">Iniciá sesión</a> o <a href="/registro?volver=/favoritos">creá una cuenta</a> para tenerlos en todos tus dispositivos.
+        </span>
+      </p>
+    <% } %>
+  </section>
+
+  <!-- ═════════════ LISTA ═════════════ -->
+  <main class="favoritos contenedor <%= productos.length ? '' : 'favoritos--vacio' %>" id="favoritos">
+    <% if (productos.length) { %>
+      <p class="favoritos__resumen" id="resumenFavoritos">
+        <span id="resumenCantidad"><%= productos.length %></span> productos ·
+        <%= conStock %> con stock · suman <strong><%= formatoPrecio(valorTotal) %></strong>
+      </p>
+    <% } %>
+
+    <div class="favoritos__grilla" id="grillaFavoritos">
+      <% productos.forEach((p, i) => { %>
+        <%- include('partials/tarjeta', { p, i }) %>
+      <% }) %>
+    </div>
+
+    <!-- Estado vacío -->
+    <div class="favoritos-vacio">
+      <span class="favoritos-vacio__icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="38" height="38"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      </span>
+      <h2 class="favoritos-vacio__titulo">Todavía no guardaste nada</h2>
+      <p>Tocá el corazón de cualquier producto para guardarlo acá.</p>
+      <a href="/catalogo" class="btn btn--solido">Explorar el catálogo</a>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/favoritos.js"></script>
+</body>
+</html>

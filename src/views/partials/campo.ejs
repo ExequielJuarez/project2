@@ -1,0 +1,32 @@
+<%
+  // Campo de formulario con etiqueta y mensaje de error.
+  // Usa `datos` y `errores` de la vista que lo incluye.
+  const valor = (datos && datos[nombre]) ?? "";
+  const error = errores && errores[nombre] ? errores[nombre].msg : "";
+  const tipoCampo = locals.tipo || "text";
+%>
+<div class="campo <%= locals.clase || '' %> <%= error ? 'campo--error' : '' %>">
+  <label class="campo__label" for="<%= nombre %>">
+    <%= etiqueta %><% if (locals.opcional) { %> <span class="campo__opcional">(opcional)</span><% } %>
+  </label>
+
+  <% if (tipoCampo === "select") { %>
+    <select class="campo__control" id="<%= nombre %>" name="<%= nombre %>"
+            aria-describedby="<%= nombre %>-error" <%- error ? 'aria-invalid="true"' : '' %> <%- locals.attrs || '' %>>
+      <option value="">Elegí una opción</option>
+      <% opciones.forEach(op => { %>
+        <option value="<%= op %>" <%= op === valor ? 'selected' : '' %>><%= op %></option>
+      <% }) %>
+    </select>
+  <% } else if (tipoCampo === "textarea") { %>
+    <textarea class="campo__control" id="<%= nombre %>" name="<%= nombre %>" rows="3"
+              placeholder="<%= locals.placeholder || '' %>"
+              aria-describedby="<%= nombre %>-error" <%- error ? 'aria-invalid="true"' : '' %> <%- locals.attrs || '' %>><%= valor %></textarea>
+  <% } else { %>
+    <input class="campo__control" type="<%= tipoCampo %>" id="<%= nombre %>" name="<%= nombre %>"
+           value="<%= valor %>" placeholder="<%= locals.placeholder || '' %>"
+           aria-describedby="<%= nombre %>-error" <%- error ? 'aria-invalid="true"' : '' %> <%- locals.attrs || '' %>>
+  <% } %>
+
+  <p class="campo__error" id="<%= nombre %>-error" aria-live="polite"><%= error %></p>
+</div>

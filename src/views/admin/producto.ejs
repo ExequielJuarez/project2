@@ -1,0 +1,116 @@
+<%- include('../partials/admin-inicio') %>
+
+<%
+  const p = producto;
+  const margen = (p.precio - p.costo) / p.precio;
+  const [claseStock, textoStock] = p.stock === 0 ? ['sin', 'Sin stock'] : p.stock <= STOCK_BAJO ? ['bajo', 'Stock bajo'] : ['ok', 'Stock OK'];
+%>
+
+      <div class="admin-cabecera">
+        <div>
+          <p class="admin-cabecera__migas"><a href="/admin">Panel</a> / <a href="/admin/productos">Productos</a> / #<%= String(p.id).padStart(4, '0') %></p>
+          <h1 class="admin-cabecera__titulo"><%= p.nombre %></h1>
+          <p class="admin-cabecera__bajada"><%= p.categoria %> · <span class="stock-tag stock-tag--<%= claseStock %>"><%= textoStock %></span></p>
+        </div>
+        <div class="admin-cabecera__acciones">
+          <a href="/producto/<%= p.id %>" class="btn btn--linea btn--chico btn--blanco" target="_blank" rel="noopener">Ver en la tienda ↗</a>
+          <a href="/admin/productos/<%= p.id %>/editar" class="btn btn--solido btn--chico">Editar</a>
+        </div>
+      </div>
+
+      <div class="ficha-admin">
+        <div class="ficha-admin__fotos">
+          <div class="ficha-admin__imagen">
+            <% if (p.imagen) { %>
+              <img src="<%= p.imagen %>" alt="<%= p.nombre %>">
+            <% } else { %>
+              <span>(IMAGEN)</span>
+            <% } %>
+            <% if (p.etiqueta) { %><span class="ficha-admin__etiqueta"><%= p.etiqueta %></span><% } %>
+          </div>
+          <% if (p.imagenes.length > 1) { %>
+            <ul class="ficha-admin__miniaturas" aria-label="Todas las fotos">
+              <% p.imagenes.forEach((f, n) => { %>
+                <li><img src="<%= f.ruta %>" alt="Foto <%= n + 1 %>" loading="lazy"></li>
+              <% }) %>
+            </ul>
+          <% } %>
+          <p class="ficha-admin__cantidad"><%= p.imagenes.length %> <%= p.imagenes.length === 1 ? 'foto' : 'fotos' %> · <a href="/admin/productos/<%= p.id %>/editar">Gestionar fotos</a></p>
+        </div>
+
+        <div class="ficha-admin__datos">
+          <section class="ficha-kpis" aria-label="Ventas del producto">
+            <div class="kpi">
+              <span class="kpi__label">Unidades vendidas</span>
+              <span class="kpi__valor"><%= ventas.unidades %></span>
+              <span class="kpi__detalle">Historial completo</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi__label">Ingresos</span>
+              <span class="kpi__valor"><%= formatoCompacto(ventas.ingresos) %></span>
+              <span class="kpi__detalle">Antes de descuentos</span>
+            </div>
+            <div class="kpi kpi--oscuro">
+              <span class="kpi__label">Ganancia generada</span>
+              <span class="kpi__valor"><%= formatoCompacto(ventas.ganancia) %></span>
+              <span class="kpi__detalle">Precio − costo × unidades</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi__label">En stock</span>
+              <span class="kpi__valor"><%= p.stock %></span>
+              <span class="kpi__detalle">Valor al costo <%= formatoCompacto(p.stock * p.costo) %></span>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__titulo">Datos del producto</h2>
+            <dl class="ficha-lista">
+              <div><dt>Precio de venta</dt><dd><%= formatoPrecio(p.precio) %></dd></div>
+              <div><dt>Con transferencia</dt><dd><%= formatoPrecio(p.precio * (1 - descuentoTransferencia)) %></dd></div>
+              <div><dt>Costo</dt><dd><%= formatoPrecio(p.costo) %></dd></div>
+              <div><dt>Ganancia por unidad</dt><dd><strong><%= formatoPrecio(p.precio - p.costo) %></strong> (<%= formatoPorcentaje(margen) %>)</dd></div>
+              <div><dt>Categoría</dt><dd><%= p.categoria %></dd></div>
+              <div><dt>Talles</dt><dd><%= p.talles && p.talles.length ? p.talles.join(" · ") : "Talle único" %></dd></div>
+              <div><dt>Color</dt><dd><span class="punto-color" style="--muestra: <%= color ? color.hex : '#ccc' %>"></span><%= color ? color.nombre : p.color %></dd></div>
+              <div><dt>Etiqueta</dt><dd><%= p.etiqueta || '—' %></dd></div>
+            </dl>
+          </section>
+
+          <section class="panel">
+            <div class="panel__cabecera">
+              <h2 class="panel__titulo">Últimas ventas</h2>
+            </div>
+            <% if (ventas.ultimas.length) { %>
+              <table class="tabla">
+                <thead><tr><th>Pedido</th><th>Fecha</th><th class="num">Cant.</th><th class="num">Ganancia</th></tr></thead>
+                <tbody>
+                  <% ventas.ultimas.forEach(v => { %>
+                    <tr>
+                      <td>#<%= v.numero %></td>
+                      <td><%= formatoFecha(v.fecha) %></td>
+                      <td class="num"><%= v.cantidad %></td>
+                      <td class="num"><%= formatoPrecio((v.precio - v.costo) * v.cantidad) %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            <% } else { %>
+              <p class="panel__bajada">Todavía no tiene ventas.</p>
+            <% } %>
+          </section>
+        </div>
+      </div>
+
+      <form action="/admin/productos/<%= p.id %>?_method=DELETE" method="POST" class="zona-peligro"
+            data-confirmar="Se va a borrar “<%= p.nombre %>” del catálogo. Esta acción no se puede deshacer."
+            data-confirmar-titulo="¿Eliminar producto?">
+        <div>
+          <strong>Eliminar producto</strong>
+          <p>Deja de mostrarse en la tienda. Los pedidos ya hechos no se modifican.</p>
+        </div>
+        <button type="submit" class="btn btn--linea btn--chico btn--blanco">Eliminar</button>
+      </form>
+
+<%- include('../partials/admin-fin') %>
+</body>
+</html>

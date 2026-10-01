@@ -1,0 +1,302 @@
+/* ==========================================================
+   ADMIN · PRODUCTOS — Estilos propios de la vista (usa base.css + admin.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.resultado {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.panel--tabla {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* ==========================================================
+   CELULAR: cada fila es una tarjeta
+   ========================================================== */
+.tabla--productos thead {
+  display: none;
+}
+
+.tabla--productos,
+.tabla--productos tbody,
+.tabla--productos tr {
+  display: block;
+}
+
+.tabla--productos tr {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 12px;
+  margin-bottom: 10px;
+  padding: 14px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+}
+
+.tabla--productos tr:hover {
+  background: var(--blanco);
+}
+
+.tabla--productos td {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  text-align: left;
+}
+
+.tabla--productos td.num {
+  text-align: left;
+}
+
+/* Etiqueta de cada dato en la tarjeta */
+.tabla--productos td[data-label]:not([data-label="Producto"])::before {
+  content: attr(data-label);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.tabla--productos td[data-label="Producto"] {
+  grid-column: 1 / -1;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gris-100);
+}
+
+.tabla--productos td[data-label="Stock"] {
+  grid-column: 1 / 3;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.tabla--productos td[data-label="Stock"]::before {
+  flex-basis: 100%;
+}
+
+.tabla--productos td.acciones {
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.producto-celda {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.producto-celda__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.producto-celda strong {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.producto-celda:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.producto-celda small {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.margen {
+  font-weight: 700;
+}
+
+.margen__monto {
+  font-size: 11px;
+  color: var(--gris-600);
+}
+
+/* Ajuste rápido de stock */
+.stock-ajuste {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  border: 1px solid var(--gris-400);
+  background: var(--blanco);
+}
+
+.stock-ajuste.guardando {
+  opacity: 0.5;
+}
+
+.stock-ajuste__btn {
+  width: 30px;
+  height: 100%;
+  font-size: 16px;
+}
+
+.stock-ajuste__btn:hover {
+  background: var(--gris-100);
+}
+
+.stock-ajuste__input {
+  width: 46px;
+  height: 100%;
+  border: 0;
+  border-left: 1px solid var(--gris-200);
+  border-right: 1px solid var(--gris-200);
+  background: transparent;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.stock-ajuste__input::-webkit-outer-spin-button,
+.stock-ajuste__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stock-ajuste__input:focus {
+  outline: 2px solid var(--negro);
+  outline-offset: -2px;
+}
+
+/* Acciones */
+.acciones {
+  white-space: nowrap;
+}
+
+.acciones form {
+  display: inline;
+}
+
+.accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  color: var(--gris-600);
+  transition: border-color var(--transicion), color var(--transicion), background var(--transicion);
+}
+
+.accion:hover {
+  border-color: var(--negro);
+  color: var(--negro);
+}
+
+.accion--borrar:hover {
+  background: var(--negro);
+  color: var(--blanco);
+}
+
+/* ==========================================================
+   TABLET ≥ 768px: tabla real
+   ========================================================== */
+@media (min-width: 768px) {
+  .panel--tabla {
+    padding: 8px 24px 12px;
+    background: var(--blanco);
+    border: 1px solid var(--gris-200);
+  }
+
+  .tabla--productos {
+    display: table;
+  }
+
+  .tabla--productos thead {
+    display: table-header-group;
+  }
+
+  .tabla--productos tbody {
+    display: table-row-group;
+  }
+
+  .tabla--productos tr {
+    display: table-row;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .tabla--productos tr:hover {
+    background: var(--hueso);
+  }
+
+  .tabla--productos td,
+  .tabla--productos td[data-label="Producto"],
+  .tabla--productos td[data-label="Stock"],
+  .tabla--productos td.acciones {
+    display: table-cell;
+    padding: 12px;
+    border-bottom: 1px solid var(--gris-200);
+  }
+
+  .tabla--productos td.num {
+    text-align: right;
+  }
+
+  .tabla--productos td[data-label]::before,
+  .tabla--productos td[data-label]:not([data-label="Producto"])::before {
+    content: none;
+  }
+
+  .tabla--productos td[data-label="Costo"] {
+    display: none;
+  }
+
+  .tabla--productos th:nth-child(3) {
+    display: none;
+  }
+
+  .tabla--productos td[data-label="Stock"] .stock-tag {
+    display: flex;
+    margin-top: 4px;
+  }
+
+  .margen__monto {
+    display: block;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .tabla--productos td[data-label="Costo"],
+  .tabla--productos th:nth-child(3) {
+    display: table-cell;
+  }
+
+  .tabla--productos td[data-label="Stock"] .stock-tag {
+    display: inline-flex;
+    margin: 0 0 0 10px;
+  }
+}

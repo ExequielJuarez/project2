@@ -1,0 +1,330 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  // Todo el contenido se edita desde Admin → Inicio (ver src/data/inicioEditable.js).
+  // textoRico() escapa el texto y convierte *palabra* en cursiva.
+  const c = contenido;
+  const plano = (t) => String(t || "").replace(/\*/g, "");
+  const romanos = ["I", "II", "III", "IV", "V", "VI"];
+  const claseLooks = ["looks__item--alto", "", "looks__item--ancho", "", "looks__item--ultimo"];
+  const chip = (src, oscuro) => `<span class="esencia__chip ${oscuro ? 'esencia__chip--oscuro' : ''}"><img src="${src}" alt="" loading="lazy"></span>`;
+  const cifras = c.esencia.cifras.filter((x) => x.texto);
+  const pasos = c.detalles.pasos.filter((p) => p.titulo || p.texto);
+  const filasTalles = c.talles.tabla.filter((f) => f.talle);
+  const lanzamientos = locals.novedades || [];
+%>
+
+<main class="inicio">
+
+  <!-- ═════════════ PORTADA ═════════════ -->
+  <section class="portada" data-seccion="portada">
+    <div class="contenedor portada__grilla">
+      <div class="portada__texto">
+        <% if (c.portada.etiqueta) { %>
+          <p class="portada__etiqueta"><span class="portada__linea"></span><%- textoRico(c.portada.etiqueta) %></p>
+        <% } %>
+        <h1 class="portada__titulo">
+          <% c.portada.titulo.split("\n").forEach((renglon) => { %>
+            <span class="portada__renglon"><span><%- textoRico(renglon) %></span></span>
+          <% }) %>
+        </h1>
+        <% if (c.portada.bajada) { %><p class="portada__bajada"><%- textoRico(c.portada.bajada) %></p><% } %>
+        <div class="portada__acciones">
+          <% if (c.portada.botonTexto) { %>
+            <a href="<%= c.portada.botonLink || '/catalogo' %>" class="btn btn--solido"><%= c.portada.botonTexto %></a>
+          <% } %>
+          <% if (c.portada.secundarioTexto) { %>
+            <a href="<%= c.portada.secundarioLink || '#' %>" class="portada__secundario"><%= c.portada.secundarioTexto %> <span aria-hidden="true"><%= String(c.portada.secundarioLink).startsWith('#') ? '↓' : '→' %></span></a>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="portada__visual" data-parallax>
+        <div class="portada__foto">
+          <img src="<%= c.portada.imagen %>" alt="<%= plano(c.portada.titulo).replace(/\n/g, ' ') %>" width="520" height="620" fetchpriority="high">
+        </div>
+
+        <% if (c.portada.sello) { %>
+          <!-- Sello giratorio -->
+          <svg class="portada__sello" viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="circuloSello" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+            <text><textPath href="#circuloSello" textLength="458" lengthAdjust="spacing"><%= c.portada.sello %></textPath></text>
+            <circle cx="100" cy="100" r="34" fill="none" stroke="currentColor" stroke-width="1"/>
+            <text x="100" y="112" text-anchor="middle" class="portada__sello-centro">M</text>
+          </svg>
+        <% } %>
+
+        <figure class="portada__mini">
+          <img src="<%= c.portada.miniImagen %>" alt="" width="400" height="500" loading="lazy">
+          <% if (c.portada.miniTexto) { %><figcaption><%- c.portada.miniTexto.split("\n").map(textoRico).join("<br>") %></figcaption><% } %>
+        </figure>
+      </div>
+    </div>
+
+    <a href="<%= c.esencia.visible ? '#esencia' : '#contenido' %>" class="portada__bajar" aria-label="Seguir bajando"><span></span></a>
+  </section>
+  <span id="contenido"></span>
+
+  <!-- ═════════════ CINTA ═════════════ -->
+  <% if (c.cinta.visible && c.cinta.palabras) { %>
+    <div class="cinta" aria-hidden="true" data-seccion="cinta">
+      <div class="cinta__pista">
+        <% for (let vuelta = 0; vuelta < 2; vuelta++) { %>
+          <% c.cinta.palabras.split("\n").forEach((palabra) => { %><span><%- textoRico(palabra) %></span><i>✦</i><% }) %>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- ═════════════ ESENCIA ═════════════ -->
+  <% if (c.esencia.visible) { %>
+    <section class="esencia" id="esencia" data-seccion="esencia">
+      <div class="contenedor">
+        <% if (c.esencia.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.esencia.etiqueta %></p><% } %>
+        <p class="esencia__texto" data-revelar>
+          <%- textoRico(c.esencia.texto).replace("[foto1]", chip(c.esencia.foto1, false)).replace("[foto2]", chip(c.esencia.foto2, true)) %>
+        </p>
+
+        <% if (cifras.length) { %>
+          <div class="cifras cifras--<%= cifras.length %>">
+            <% cifras.forEach((x) => { %>
+              <div class="cifra" data-revelar>
+                <strong><span data-contar="<%= x.numero %>"><%= x.numero.toLocaleString('es-AR') %></span><%= x.sufijo %></strong>
+                <span><%= x.texto %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ CATEGORÍAS ═════════════ -->
+  <% if (c.categorias.visible) { %>
+    <section class="categorias" data-seccion="categorias">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <div>
+            <% if (c.categorias.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.categorias.etiqueta %></p><% } %>
+            <h2 class="seccion-titulo" data-revelar><%- textoRico(c.categorias.titulo) %></h2>
+          </div>
+          <div class="categorias__flechas" aria-hidden="true">
+            <button type="button" class="flecha" data-mover="-1" tabindex="-1">←</button>
+            <button type="button" class="flecha" data-mover="1" tabindex="-1">→</button>
+          </div>
+        </div>
+      </div>
+
+      <ul class="categorias__lista" id="categorias">
+        <% c.categorias.items.forEach((col, i) => { %>
+          <li class="categoria categoria--<%= col.fondo %>" data-revelar>
+            <a href="<%= col.link || '/catalogo' %>" class="categoria__link">
+              <div class="categoria__imagen">
+                <img src="<%= col.imagen %>" alt="<%= col.nombre %>" width="400" height="520" loading="lazy" style="--enfoque: <%= ['50% 30%', '50% 45%', '50% 70%', '50% 20%'][i % 4] %>">
+              </div>
+              <div class="categoria__info">
+                <span class="categoria__num"><%= String(i + 1).padStart(2, '0') %></span>
+                <h3 class="categoria__nombre"><%= col.nombre %></h3>
+                <p class="categoria__frase"><%- textoRico(col.frase) %></p>
+                <span class="categoria__ver">Explorar <span aria-hidden="true">→</span></span>
+              </div>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ NOVEDADES (productos reales del catálogo) ═════════════ -->
+  <% if (c.novedades.visible && lanzamientos.length) { %>
+    <section class="novedades" data-seccion="novedades">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <div>
+            <% if (c.novedades.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.novedades.etiqueta %></p><% } %>
+            <h2 class="seccion-titulo" data-revelar><%- textoRico(c.novedades.titulo) %></h2>
+          </div>
+          <% if (c.novedades.botonTexto) { %>
+            <a href="<%= c.novedades.botonLink || '/catalogo' %>" class="galeria__seguir" data-revelar><%= c.novedades.botonTexto %> <span aria-hidden="true">→</span></a>
+          <% } %>
+        </div>
+        <div class="novedades__grilla">
+          <% lanzamientos.forEach((p, i) => { %>
+            <%- include('partials/tarjeta', { p, i }) %>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ DETALLES ═════════════ -->
+  <% if (c.detalles.visible && pasos.length) { %>
+    <section class="detalles" data-seccion="detalles">
+      <div class="contenedor detalles__grilla">
+        <div class="detalles__visual">
+          <div class="detalles__marco">
+            <% pasos.forEach((p, i) => { %>
+              <img src="<%= p.imagen %>" alt="" class="detalles__img <%= i === 0 ? 'activa' : '' %>" data-paso-img="<%= i %>" loading="lazy">
+            <% }) %>
+            <span class="detalles__contador"><span id="pasoActual">01</span> / <%= String(pasos.length).padStart(2, '0') %></span>
+          </div>
+        </div>
+
+        <div class="detalles__texto">
+          <% if (c.detalles.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.detalles.etiqueta %></p><% } %>
+          <h2 class="seccion-titulo" data-revelar><%- textoRico(c.detalles.titulo) %></h2>
+          <ol class="pasos-detalle">
+            <% pasos.forEach((p, i) => { %>
+              <li class="paso-detalle <%= i === 0 ? 'activo' : '' %>" data-paso="<%= i %>" data-revelar>
+                <span class="paso-detalle__num"><%= String(i + 1).padStart(2, '0') %></span>
+                <div>
+                  <h3><%= p.titulo %></h3>
+                  <p><%- textoRico(p.texto) %></p>
+                </div>
+              </li>
+            <% }) %>
+          </ol>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ GUÍA DE ESTILO ═════════════ -->
+  <% if (c.estilo.visible) { %>
+    <section class="estilo" data-seccion="estilo">
+      <div class="contenedor estilo__grilla">
+        <div class="estilo__cabecera">
+          <% if (c.estilo.etiqueta) { %><p class="seccion-etiqueta seccion-etiqueta--clara" data-revelar><%= c.estilo.etiqueta %></p><% } %>
+          <h2 class="seccion-titulo" data-revelar><%- textoRico(c.estilo.titulo) %></h2>
+          <% if (c.estilo.bajada) { %><p class="estilo__bajada" data-revelar><%- textoRico(c.estilo.bajada) %></p><% } %>
+        </div>
+
+        <figure class="estilo__imagen" data-revelar>
+          <img src="<%= c.estilo.imagen %>" alt="" width="520" height="640" loading="lazy">
+        </figure>
+
+        <ol class="consejos">
+          <% c.estilo.consejos.filter((x) => x.titulo || x.texto).forEach((x, i) => { %>
+            <li class="consejo" data-revelar>
+              <span class="consejo__num"><%= romanos[i] %></span>
+              <h3><%= x.titulo %></h3>
+              <p><%- textoRico(x.texto) %></p>
+            </li>
+          <% }) %>
+        </ol>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ GUÍA DE TALLES ═════════════ -->
+  <% if (c.talles.visible && filasTalles.length) { %>
+    <section class="guia-talles" id="talles" data-seccion="talles">
+      <div class="contenedor guia-talles__grilla">
+        <div class="guia-talles__texto">
+          <% if (c.talles.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.talles.etiqueta %></p><% } %>
+          <h2 class="seccion-titulo" data-revelar><%- textoRico(c.talles.titulo) %></h2>
+          <% if (c.talles.bajada) { %><p class="guia-talles__bajada" data-revelar><%- textoRico(c.talles.bajada) %></p><% } %>
+          <% if (c.talles.botonTexto) { %>
+            <a href="<%= c.talles.botonLink || '#' %>" class="btn btn--solido" data-revelar><%= c.talles.botonTexto %></a>
+          <% } %>
+        </div>
+
+        <div class="guia-talles__tabla" data-revelar>
+          <table>
+            <caption class="visualmente-oculto">Medidas por talle, en centímetros</caption>
+            <thead>
+              <tr><th scope="col">Talle</th><th scope="col">Busto</th><th scope="col">Cintura</th><th scope="col">Cadera</th></tr>
+            </thead>
+            <tbody>
+              <% filasTalles.forEach((f) => { %>
+                <tr>
+                  <th scope="row"><%= f.talle %></th>
+                  <td><%= f.busto %></td>
+                  <td><%= f.cintura %></td>
+                  <td><%= f.cadera %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ LOOKS ═════════════ -->
+  <% if (c.looks.visible) { %>
+    <section class="looks" data-seccion="looks">
+      <div class="contenedor">
+        <div class="seccion-cabecera">
+          <div>
+            <% if (c.looks.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.looks.etiqueta %></p><% } %>
+            <h2 class="seccion-titulo" data-revelar><%- textoRico(c.looks.titulo) %></h2>
+          </div>
+          <% if (c.looks.redTexto) { %>
+            <a href="<%= c.looks.redLink || '#' %>" class="galeria__seguir" data-revelar><%= c.looks.redTexto %> <span aria-hidden="true">→</span></a>
+          <% } %>
+        </div>
+
+        <div class="looks__grilla">
+          <% c.looks.fotos.forEach((f, i) => { %>
+            <figure class="looks__item <%= claseLooks[i] %> looks__item--<%= f.fondo %>" data-revelar>
+              <img src="<%= f.imagen %>" alt="<%= f.texto %>" loading="lazy" style="--enfoque: <%= ['50% 35%', '50% 25%', '50% 60%', '50% 80%', '50% 55%'][i % 5] %>">
+              <% if (f.texto) { %><figcaption><%= f.texto %></figcaption><% } %>
+            </figure>
+            <% if (i === 1) { %>
+              <figure class="looks__item looks__item--frase" data-revelar>
+                <blockquote><%- textoRico(c.looks.frase) %></blockquote>
+              </figure>
+            <% } %>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ TESTIMONIOS ═════════════ -->
+  <% if (c.testimonios.visible && c.testimonios.items.length) { %>
+    <section class="testimonios" data-seccion="testimonios" aria-roledescription="carrusel" aria-label="Lo que dicen nuestras clientas">
+      <div class="contenedor testimonios__caja">
+        <% if (c.testimonios.etiqueta) { %><p class="seccion-etiqueta" data-revelar><%= c.testimonios.etiqueta %></p><% } %>
+        <div class="testimonios__pista" id="testimonios" aria-live="polite">
+          <% c.testimonios.items.forEach((t, i) => { %>
+            <figure class="testimonio <%= i === 0 ? 'activo' : '' %>" data-testimonio="<%= i %>" <%= i === 0 ? '' : 'aria-hidden=true' %>>
+              <blockquote><%- textoRico(t.texto) %></blockquote>
+              <figcaption><strong><%= t.autor %></strong><% if (t.lugar) { %> · <%= t.lugar %><% } %></figcaption>
+            </figure>
+          <% }) %>
+        </div>
+        <% if (c.testimonios.items.length > 1) { %>
+          <div class="testimonios__puntos" role="tablist">
+            <% c.testimonios.items.forEach((t, i) => { %>
+              <button type="button" class="<%= i === 0 ? 'activo' : '' %>" data-ir="<%= i %>" role="tab" aria-selected="<%= i === 0 %>" aria-label="Opinión <%= i + 1 %>"></button>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- ═════════════ CIERRE ═════════════ -->
+  <% if (c.cierre.visible) { %>
+    <section class="cierre" data-seccion="cierre">
+      <div class="contenedor cierre__caja">
+        <span class="perlas cierre__perlas" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        <% if (c.cierre.etiqueta) { %><p class="cierre__etiqueta script" data-revelar><%= c.cierre.etiqueta %></p><% } %>
+        <h2 class="cierre__titulo" data-revelar><%- c.cierre.titulo.split("\n").map(textoRico).join("<br>") %></h2>
+        <div class="cierre__acciones" data-revelar>
+          <% if (c.cierre.botonTexto) { %><a href="<%= c.cierre.botonLink || '/catalogo' %>" class="btn btn--claro"><%= c.cierre.botonTexto %></a><% } %>
+          <% if (c.cierre.secundarioTexto) { %><a href="<%= c.cierre.secundarioLink || '#' %>" class="cierre__link"><%= c.cierre.secundarioTexto %> →</a><% } %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+</main>
+
+<%- include('partials/footer') %>
+<script src="/js/inicio.js"></script>
+</body>
+</html>

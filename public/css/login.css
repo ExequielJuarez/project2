@@ -1,0 +1,66 @@
+/* ==========================================================
+   LOGIN — Estilos propios de la vista (usa base.css + acceso.css)
+   ========================================================== */
+
+/* Usuario de prueba (solo maqueta) */
+.demo {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin-top: 28px;
+  padding: 14px 16px;
+  border: 1px dashed var(--gris-400);
+  font-size: 13px;
+}
+
+.demo p {
+  grid-column: 1;
+}
+
+.demo span {
+  display: inline-block;
+  min-width: 86px;
+  color: var(--gris-600);
+}
+
+@media (max-width: 479px) {
+  .demo {
+    font-size: 12px;
+  }
+
+  .demo span {
+    min-width: 72px;
+  }
+}
+
+.demo__titulo {
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.demo__botones {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.demo__usar {
+  padding: 8px 12px;
+  border: 1px solid var(--negro);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background var(--transicion), color var(--transicion);
+}
+
+.demo__usar:hover {
+  background: var(--negro);
+  color: var(--blanco);
+}

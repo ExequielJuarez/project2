@@ -1,0 +1,137 @@
+/* ==========================================================
+   REGISTRO — Estilos propios de la vista (usa base.css + acceso.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.registro__google {
+  width: 100%;
+  height: 50px;
+  background: var(--blanco);
+  font-size: 11px;
+}
+
+.registro__google:hover {
+  background: var(--negro);
+}
+
+.acceso__form .separador {
+  margin-top: 22px;
+}
+
+.registro__fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+/* Medidor de seguridad */
+.registro__clave {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fuerza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fuerza__barras {
+  display: grid;
+  flex: 0 0 140px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.fuerza__barras span {
+  height: 4px;
+  background: var(--gris-200);
+  transition: background var(--transicion);
+}
+
+/* El nivel lo pone registro.js con data-nivel="0..4" */
+.fuerza[data-nivel="1"] span:nth-child(-n + 1),
+.fuerza[data-nivel="2"] span:nth-child(-n + 2),
+.fuerza[data-nivel="3"] span:nth-child(-n + 3),
+.fuerza[data-nivel="4"] span:nth-child(-n + 4) {
+  background: var(--negro);
+}
+
+.fuerza__texto {
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+/* Requisitos que se van tildando */
+.requisitos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--gris-600);
+}
+
+.requisitos li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color var(--transicion);
+}
+
+.requisitos li::before {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--gris-400);
+  border-radius: 50%;
+  transition: background var(--transicion), border-color var(--transicion);
+}
+
+.requisitos li.cumplido {
+  color: var(--negro);
+}
+
+.requisitos li.cumplido::before {
+  border-color: var(--negro);
+  background: var(--negro) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M1 4l2 2 4-4' fill='none' stroke='%23fff' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat center;
+}
+
+/* Checkboxes */
+.registro__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.registro__checks .check-simple {
+  align-items: flex-start;
+  margin-top: 0;
+  line-height: 1.4;
+}
+
+.registro__checks .check-simple a {
+  color: var(--negro);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .registro__fila {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .acceso__form {
+    padding-top: 24px;
+  }
+}

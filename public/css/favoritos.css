@@ -1,0 +1,235 @@
+/* ==========================================================
+   FAVORITOS — Estilos propios de la vista (usa base.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+/* ==========================================================
+   ENCABEZADO
+   ========================================================== */
+.favoritos-hero {
+  padding-top: 28px;
+}
+
+.favoritos-hero__fila {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 14px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--negro);
+}
+
+.favoritos-hero__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(44px, 9vw, 88px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+.favoritos-hero__cantidad {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-family: var(--fuente-texto);
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: super;
+}
+
+.favoritos-hero__texto {
+  max-width: 420px;
+  margin-top: 12px;
+  color: var(--gris-600);
+}
+
+.favoritos-hero__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.favoritos-hero__acciones[hidden] {
+  display: none;
+}
+
+.favoritos-hero__acciones .btn {
+  height: 50px;
+}
+
+.favoritos-hero__acciones .btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.favoritos-hero__vaciar {
+  align-self: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.favoritos-hero__vaciar:hover {
+  color: var(--negro);
+}
+
+.favoritos-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px dashed var(--gris-400);
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.favoritos-aviso svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--negro);
+}
+
+.favoritos-aviso a {
+  color: var(--negro);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================
+   GRILLA
+   ========================================================== */
+.favoritos {
+  padding-top: 20px;
+  padding-bottom: 64px;
+}
+
+.favoritos__resumen {
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.favoritos__resumen strong {
+  color: var(--negro);
+}
+
+.favoritos__grilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 12px;
+}
+
+/* Al quitar un favorito desde esta página, la tarjeta se va */
+.favoritos__grilla .tarjeta.saliendo {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Estado vacío */
+.favoritos-vacio {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 64px 20px;
+  text-align: center;
+  color: var(--gris-600);
+}
+
+.favoritos--vacio .favoritos-vacio {
+  display: flex;
+}
+
+.favoritos--vacio .favoritos__resumen {
+  display: none;
+}
+
+.favoritos-vacio__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 6px;
+  border: 1px dashed var(--gris-400);
+  border-radius: 50%;
+  color: var(--negro);
+}
+
+.favoritos-vacio__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: clamp(30px, 6vw, 46px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  color: var(--negro);
+}
+
+.favoritos-vacio .btn {
+  margin-top: 10px;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .favoritos-hero {
+    padding-top: 40px;
+  }
+
+  .favoritos-hero__fila {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-bottom: 28px;
+  }
+
+  .favoritos-hero__acciones {
+    flex: none;
+    align-items: flex-end;
+  }
+
+  .favoritos-hero__acciones .btn {
+    padding: 0 28px;
+  }
+
+  .favoritos-hero__vaciar {
+    align-self: flex-end;
+  }
+
+  .favoritos {
+    padding-top: 28px;
+  }
+
+  .favoritos__grilla {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px 20px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .favoritos__grilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .favoritos {
+    padding-bottom: 96px;
+  }
+}

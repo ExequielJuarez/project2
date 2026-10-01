@@ -1,0 +1,272 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const p = producto;
+  const precioTransferencia = p.precio * (1 - descuentoTransferencia);
+  const valorCuota = p.precio / p.cuotas;
+  const numero = (n) => String(n).padStart(2, "0");
+  const sinStock = p.stock <= 0;
+  // Fotos reales del producto; si todavía no tiene, 4 lugares de muestra
+  const fotos = p.imagenes.length ? p.imagenes.map(i => i.ruta) : [null, null, null, null];
+%>
+
+  <!-- ═════════════ MIGAS DE PAN ═════════════ -->
+  <div class="contenedor">
+    <nav class="migas migas--producto" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <a href="/catalogo">Catálogo</a>
+      <span>/</span>
+      <a href="/catalogo"><%= p.categoria %></a>
+      <span>/</span>
+      <span aria-current="page"><%= p.nombre %></span>
+    </nav>
+  </div>
+
+  <!-- ═════════════ PRODUCTO ═════════════ -->
+  <main class="producto contenedor" data-id="<%= p.id %>" data-precio="<%= p.precio %>" data-nombre="<%= p.nombre %>">
+
+    <!-- Galería: carrusel en celular/tablet, mosaico en PC -->
+    <section class="galeria" aria-label="Fotos del producto">
+      <div class="galeria__visor">
+        <div class="galeria__pista" id="galeriaPista">
+          <% fotos.forEach((ruta, i) => { const n = i + 1; %>
+            <button class="foto <%= !ruta && n % 3 === 2 ? 'foto--oscura' : '' %>" data-indice="<%= i %>" aria-label="Ampliar imagen <%= n %>">
+              <% if (ruta) { %>
+                <img class="foto__img" src="<%= ruta %>" alt="<%= p.nombre %> — foto <%= n %>" <%- i > 1 ? 'loading="lazy"' : '' %>>
+              <% } else { %>
+                <span class="foto__texto">(IMAGEN <%= n %>)</span>
+              <% } %>
+              <span class="foto__zoom" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="11" cy="11" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-4.5-4.5M11 8.5v5M8.5 11h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </span>
+            </button>
+          <% }) %>
+        </div>
+
+        <% if (p.etiqueta) { %>
+          <span class="galeria__etiqueta"><%= p.etiqueta %></span>
+        <% } %>
+
+        <div class="galeria__contador" aria-hidden="true">
+          <span id="fotoActual">01</span> / <%= numero(fotos.length) %>
+        </div>
+        <div class="galeria__progreso" aria-hidden="true"><span id="galeriaProgreso"></span></div>
+      </div>
+
+      <div class="galeria__miniaturas" role="tablist" aria-label="Elegir imagen">
+        <% fotos.forEach((ruta, i) => { const n = i + 1; %>
+          <button class="miniatura <%= n === 1 ? 'activa' : '' %> <%= !ruta && n % 3 === 2 ? 'miniatura--oscura' : '' %> <%= ruta ? 'miniatura--foto' : '' %>" data-indice="<%= i %>" aria-label="Imagen <%= n %>">
+            <% if (ruta) { %>
+              <img src="<%= ruta %>" alt="" loading="lazy">
+            <% } else { %>
+              <%= numero(n) %>
+            <% } %>
+          </button>
+        <% }) %>
+      </div>
+    </section>
+
+    <!-- Información y compra -->
+    <section class="info" aria-label="Información del producto">
+      <div class="info__interior">
+        <div class="info__cabecera">
+          <p class="info__categoria"><%= p.categoria %></p>
+          <p class="info__codigo">Cód. <%= String(p.id).padStart(4, "0") %></p>
+        </div>
+
+        <h1 class="info__titulo"><%= p.nombre %></h1>
+
+        <div class="precio">
+          <p class="precio__lista"><%= formatoPrecio(p.precio) %></p>
+          <p class="precio__transferencia">
+            <strong><%= formatoPrecio(precioTransferencia) %></strong>
+            con transferencia
+            <span class="precio__tag">-<%= Math.round(descuentoTransferencia * 100) %>%</span>
+          </p>
+          <p class="precio__cuotas">
+            <%= p.cuotas %> cuotas sin interés de <strong><%= formatoPrecio(valorCuota) %></strong>
+          </p>
+        </div>
+
+        <p class="info__resumen"><%= p.resumen %></p>
+
+        <!-- Variantes de color -->
+        <div class="opcion">
+          <p class="opcion__titulo">Color: <span id="colorElegido"><%= p.colorInfo.nombre %></span></p>
+          <div class="opcion__colores">
+            <% colores.forEach(c => { %>
+              <label class="swatch" title="<%= c.nombre %>">
+                <input type="radio" name="color" value="<%= c.nombre %>" <%= c.valor === p.color ? 'checked' : '' %>>
+                <span class="swatch__muestra" style="--muestra: <%= c.hex %>"></span>
+              </label>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Talle -->
+        <% if (p.talles.length) { %>
+          <div class="opcion" id="opcionTalle">
+            <p class="opcion__titulo">Talle: <span id="talleElegido">Elegí el tuyo</span></p>
+            <div class="opcion__talles" role="radiogroup" aria-label="Talle">
+              <% p.talles.forEach(t => { %>
+                <label class="talle">
+                  <input type="radio" name="talle" value="<%= t %>">
+                  <span><%= t %></span>
+                </label>
+              <% }) %>
+            </div>
+            <p class="opcion__ayuda" id="talleAyuda" hidden>Elegí un talle para continuar</p>
+          </div>
+        <% } %>
+
+        <!-- Cantidad + agregar -->
+        <div class="compra" id="compra">
+          <div class="cantidad" aria-label="Cantidad">
+            <button type="button" class="cantidad__btn" data-cantidad="-1" aria-label="Restar">−</button>
+            <input type="number" id="cantidad" value="1" min="1" max="<%= p.stock %>" inputmode="numeric" aria-label="Cantidad">
+            <button type="button" class="cantidad__btn" data-cantidad="1" aria-label="Sumar">+</button>
+          </div>
+          <button class="btn btn--solido compra__agregar" id="btnAgregar" <%= sinStock ? 'disabled' : '' %>><%= sinStock ? 'Sin stock' : 'Agregar al carrito' %></button>
+          <% const esFav = (locals.favoritosIds || []).includes(p.id); %>
+          <button class="compra__fav tarjeta__fav <%= esFav ? 'activo' : '' %>" data-fav-id="<%= p.id %>" aria-pressed="<%= esFav %>" aria-label="<%= esFav ? 'Quitar de favoritos' : 'Agregar a favoritos' %>">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <button class="btn btn--linea compra__ahora" <%= sinStock ? 'disabled' : '' %>>Comprar ahora</button>
+
+        <div class="stock <%= sinStock ? 'stock--agotado' : '' %>">
+          <span class="stock__punto"></span>
+          <% if (sinStock) { %>
+            Sin stock por el momento
+          <% } else { %>
+            En stock · quedan <strong><%= p.stock %></strong> <%= p.stock === 1 ? 'unidad' : 'unidades' %>
+          <% } %>
+        </div>
+
+        <!-- Calculador de envío (demo) -->
+        <form class="envio" id="formEnvio" novalidate>
+          <label for="codigoPostal" class="envio__label">Calculá el envío</label>
+          <div class="envio__fila">
+            <input type="text" id="codigoPostal" placeholder="Código postal" inputmode="numeric" maxlength="4">
+            <button type="submit">Calcular</button>
+          </div>
+          <ul class="envio__resultados" id="envioResultados" hidden></ul>
+        </form>
+
+        <!-- Beneficios rápidos -->
+        <ul class="ventajas">
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.7" fill="var(--blanco)" stroke="currentColor" stroke-width="1.5"/><circle cx="17" cy="17.5" r="1.7" fill="var(--blanco)" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span><strong>Envío gratis</strong> desde $150.000</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 12a8 8 0 0114-5.3M20 12a8 8 0 01-14 5.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><strong>Cambios</strong> hasta 30 días</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span><strong>Compra</strong> protegida</span>
+          </li>
+        </ul>
+
+        <!-- Información extra -->
+        <div class="info__acordeones">
+          <div class="acordeon">
+            <button class="acordeon__titulo" aria-expanded="false">Medios de pago <span class="acordeon__icono"></span></button>
+            <div class="acordeon__contenido">
+              <p>Tarjetas de crédito y débito, transferencia bancaria y billeteras virtuales.</p>
+              <p><strong><%= p.cuotas %> cuotas sin interés</strong> con todas las tarjetas bancarias.</p>
+              <p class="info__logos">(VISA) (MASTER) (AMEX) (MP)</p>
+            </div>
+          </div>
+          <div class="acordeon">
+            <button class="acordeon__titulo" aria-expanded="false">Envíos <span class="acordeon__icono"></span></button>
+            <div class="acordeon__contenido">
+              <p>Enviamos a todo el país. Despachamos dentro de las 48 hs hábiles de acreditado el pago.</p>
+              <p>También podés retirar sin cargo por nuestro showroom.</p>
+            </div>
+          </div>
+          <div class="acordeon">
+            <button class="acordeon__titulo" aria-expanded="false">Cambios y devoluciones <span class="acordeon__icono"></span></button>
+            <div class="acordeon__contenido">
+              <p>Tenés 30 días desde que recibís tu compra para cambiarla o devolverla, sin uso y en su empaque original.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ═════════════ DESCRIPCIÓN Y FICHA TÉCNICA ═════════════ -->
+  <section class="detalle">
+    <div class="contenedor detalle__grilla">
+      <div class="detalle__texto">
+        <p class="detalle__etiqueta">Sobre el producto</p>
+        <h2 class="detalle__titulo">Detalles que hacen la diferencia</h2>
+        <% p.descripcion.forEach(parrafo => { %>
+          <p><%= parrafo %></p>
+        <% }) %>
+
+        <ol class="destacados">
+          <% p.destacados.forEach((d, n) => { %>
+            <li>
+              <span class="destacados__num"><%= numero(n + 1) %></span>
+              <span><%= d %></span>
+            </li>
+          <% }) %>
+        </ol>
+      </div>
+
+      <div class="ficha">
+        <p class="detalle__etiqueta">Ficha técnica</p>
+        <dl class="ficha__lista">
+          <% p.especificaciones.forEach(([clave, valor]) => { %>
+            <div class="ficha__fila">
+              <dt><%= clave %></dt>
+              <dd><%= valor %></dd>
+            </div>
+          <% }) %>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ RELACIONADOS ═════════════ -->
+  <section class="relacionados contenedor">
+    <div class="relacionados__cabecera">
+      <h2 class="relacionados__titulo">También te puede gustar</h2>
+      <a href="/catalogo" class="relacionados__link">Ver todo →</a>
+    </div>
+    <div class="relacionados__grilla">
+      <% relacionados.forEach((r, i) => { %>
+        <%- include('partials/tarjeta', { p: r, i }) %>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- Barra de compra fija (celular / tablet) -->
+  <div class="barra-compra" id="barraCompra" aria-hidden="true">
+    <div class="barra-compra__info">
+      <p class="barra-compra__nombre"><%= p.nombre %></p>
+      <p class="barra-compra__precio"><%= formatoPrecio(p.precio) %></p>
+    </div>
+    <button class="btn btn--solido" id="btnAgregarBarra" tabindex="-1" <%= sinStock ? 'disabled' : '' %>><%= sinStock ? 'Sin stock' : 'Agregar' %></button>
+  </div>
+
+  <!-- Visor de fotos a pantalla completa -->
+  <div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Fotos del producto" hidden>
+    <button class="visor__cerrar" id="visorCerrar" aria-label="Cerrar">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="visor__flecha visor__flecha--prev" id="visorPrev" aria-label="Anterior">←</button>
+    <div class="visor__foto" id="visorFoto"><span class="foto__texto">(IMAGEN 1)</span></div>
+    <button class="visor__flecha visor__flecha--sig" id="visorSig" aria-label="Siguiente">→</button>
+    <p class="visor__contador" id="visorContador">01 / <%= numero(fotos.length) %></p>
+  </div>
+
+  <%- include('partials/footer') %>
+  <script src="/js/producto.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <main class="contenedor pago-demo">
+    <div class="pago-demo__caja">
+      <p class="pago-demo__sello">Modo demostración</p>
+      <h1 class="pago-demo__titulo">Simular el pago</h1>
+      <p class="pago-demo__texto">
+        Mercado Pago todavía no está conectado, así que acá se simula lo que pasaría al pagar.
+        <strong>No se cobra nada</strong> y no hace falta cargar ninguna tarjeta.
+      </p>
+
+      <dl class="pago-demo__resumen">
+        <div><dt>Pedido</dt><dd>#<%= pedido.numero %></dd></div>
+        <div><dt>Productos</dt><dd><%= pedido.items.reduce((a, i) => a + i.cantidad, 0) %></dd></div>
+        <div class="pago-demo__total"><dt>Total</dt><dd><%= formatoPrecio(pedido.total) %></dd></div>
+      </dl>
+
+      <form action="/pagos/demo/<%= pedido.numero %>" method="POST" class="pago-demo__opciones" id="formDemo">
+        <button type="submit" name="resultado" value="aprobado" class="btn btn--solido">Simular pago aprobado</button>
+        <button type="submit" name="resultado" value="rechazado" class="btn btn--linea">Simular pago rechazado</button>
+        <button type="submit" name="resultado" value="pendiente" class="btn btn--linea">Simular pago en proceso</button>
+      </form>
+
+      <a href="/pedido/<%= pedido.numero %>" class="pago-demo__volver">← Volver sin pagar</a>
+
+      <p class="pago-demo__ayuda">
+        Para cobrar de verdad: creá tus credenciales en Mercado Pago y cargá <code>MP_ACCESS_TOKEN</code> en el archivo <code>.env</code>.
+        Desde ese momento este botón lleva a la página de pago real.
+      </p>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/pago-demo.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<%
+  // Campo de contraseña con botón para mostrarla y aviso de mayúsculas.
+  // Parámetros: nombre, etiqueta, autocomplete, enlace (opcional: { texto, href })
+  const errorClave = errores && errores[nombre] ? errores[nombre].msg : "";
+%>
+<div class="campo <%= errorClave ? 'campo--error' : '' %>">
+  <div class="campo__cabecera">
+    <label class="campo__label" for="<%= nombre %>"><%= etiqueta %></label>
+    <% if (locals.enlace) { %>
+      <a href="<%= enlace.href %>" class="acceso__olvido" <%- enlace.href === '#' ? 'data-proximamente' : '' %>><%= enlace.texto %></a>
+    <% } %>
+  </div>
+  <div class="clave">
+    <input class="campo__control" type="password" id="<%= nombre %>" name="<%= nombre %>"
+           autocomplete="<%= autocomplete %>" required
+           aria-describedby="<%= nombre %>-error <%= nombre %>-mayus<%= locals.describe ? ' ' + describe : '' %>"
+           <%- errorClave ? 'aria-invalid="true"' : '' %>>
+    <button type="button" class="clave__ver" aria-label="Mostrar contraseña" aria-pressed="false">
+      <svg class="clave__ojo" viewBox="0 0 24 24" width="20" height="20"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      <svg class="clave__ojo-tachado" viewBox="0 0 24 24" width="20" height="20"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 20L20 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <p class="clave__mayus" id="<%= nombre %>-mayus" hidden>Tenés activadas las mayúsculas</p>
+  <%- locals.extra || '' %>
+  <p class="campo__error" id="<%= nombre %>-error" aria-live="polite"><%= errorClave %></p>
+</div>

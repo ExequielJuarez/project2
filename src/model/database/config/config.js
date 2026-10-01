@@ -13,6 +13,8 @@ const base = {
   // el "SET time_zone" de database/datos-prueba.sql
   timezone: process.env.DB_TIMEZONE || "-03:00",
   logging: process.env.DB_LOG === "true" ? console.log : false,
+  // Máximo de conexiones abiertas a la vez (la base gratis de Clever Cloud acepta 5 en total)
+  pool: { max: Number(process.env.DB_POOL_MAX) || 5, min: 0, idle: 10000, acquire: 30000 },
   // Que los DECIMAL lleguen como número y no como texto
   dialectOptions: { decimalNumbers: true, dateStrings: false },
   define: {

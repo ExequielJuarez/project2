@@ -1,0 +1,110 @@
+/* ==========================================================
+   PAGO DEMO — Simulación del pago sin Mercado Pago (usa base.css)
+   Mobile first · Tablet ≥ 768px
+   ========================================================== */
+
+.pago-demo {
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+
+.pago-demo__caja {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 26px 20px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+}
+
+.pago-demo__sello {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px dashed var(--negro);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pago-demo__titulo {
+  margin-top: 16px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(34px, 8vw, 46px);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.pago-demo__texto {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gris-600);
+}
+
+.pago-demo__texto strong {
+  color: var(--negro);
+}
+
+.pago-demo__resumen {
+  margin-top: 22px;
+  border-top: 1px solid var(--gris-200);
+}
+
+.pago-demo__resumen div {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gris-200);
+  font-size: 14px;
+}
+
+.pago-demo__resumen dt {
+  color: var(--gris-600);
+}
+
+.pago-demo__total dd {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pago-demo__opciones {
+  display: grid;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.pago-demo__volver {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pago-demo__ayuda {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--gris-200);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gris-600);
+}
+
+.pago-demo__ayuda code {
+  padding: 1px 5px;
+  background: var(--gris-100);
+  color: var(--negro);
+}
+
+@media (min-width: 768px) {
+  .pago-demo {
+    padding-top: 56px;
+    padding-bottom: 96px;
+  }
+
+  .pago-demo__caja {
+    padding: 40px;
+  }
+}

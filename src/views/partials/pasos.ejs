@@ -1,0 +1,20 @@
+<%
+  // pasoActual: 1 = carrito, 2 = datos, 3 = pago
+  const pasosCompra = [
+    { num: "01", texto: "Carrito", href: "/carrito" },
+    { num: "02", texto: "Datos", href: "/checkout/datos" },
+    { num: "03", texto: "Pago", href: null },
+  ];
+%>
+<ol class="pasos" aria-label="Pasos de la compra">
+  <% pasosCompra.forEach((paso, n) => {
+       const estado = n + 1 === pasoActual ? "activo" : n + 1 < pasoActual ? "hecho" : ""; %>
+    <li class="pasos__item <%= estado %>" <%- estado === "activo" ? 'aria-current="step"' : "" %>>
+      <% if (estado === "hecho" && paso.href) { %>
+        <a href="<%= paso.href %>"><span><%= paso.num %></span> <%= paso.texto %></a>
+      <% } else { %>
+        <span><%= paso.num %></span> <%= paso.texto %>
+      <% } %>
+    </li>
+  <% }) %>
+</ol>

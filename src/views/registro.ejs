@@ -1,0 +1,115 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const hayErrores = Object.keys(errores).length > 0;
+  const errorTerminos = errores.terminos ? errores.terminos.msg : "";
+%>
+
+  <div class="contenedor">
+    <nav class="migas migas--acceso" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <span aria-current="page">Crear cuenta</span>
+    </nav>
+  </div>
+
+  <!-- ═════════════ REGISTRO ═════════════ -->
+  <main class="acceso contenedor">
+
+    <!-- Panel de marca (PC / tablet) -->
+    <section class="acceso__panel" aria-label="Beneficios de tu cuenta">
+      <span class="acceso__panel-imagen" aria-hidden="true">(IMAGEN DE MARCA)</span>
+
+      <div class="acceso__panel-texto">
+        <p class="acceso__etiqueta">Nueva cuenta</p>
+        <p class="acceso__frase">Sumate y <em>comprá sin vueltas.</em></p>
+
+        <ul class="acceso__beneficios">
+          <li><span>01</span> Tus datos listos en cada compra</li>
+          <li><span>02</span> Lista de favoritos en todos tus dispositivos</li>
+          <li><span>03</span> Descuentos exclusivos para clientes</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Formulario -->
+    <section class="acceso__form" aria-labelledby="tituloRegistro">
+      <h1 class="acceso__titulo" id="tituloRegistro">Crear cuenta</h1>
+      <p class="acceso__bajada">Te lleva menos de un minuto.</p>
+
+      <a href="/auth/google?volver=<%= encodeURIComponent(volver) %>" class="btn btn--linea registro__google">
+        (GOOGLE) Registrarme con Google
+      </a>
+
+      <div class="separador"><span>o con tu email</span></div>
+
+      <% if (hayErrores) { %>
+        <div class="aviso aviso--error" role="alert" id="resumenErrores" tabindex="-1">
+          <strong>Revisá estos datos:</strong>
+          <ul>
+            <% Object.entries(errores).forEach(([campo, e]) => { %>
+              <li><a href="#<%= campo %>"><%= e.msg %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form action="/registro" method="POST" id="formRegistro" class="acceso__campos" novalidate>
+        <input type="hidden" name="volver" value="<%= volver %>">
+
+        <div class="registro__fila">
+          <%- include('partials/campo', { nombre: 'nombre', etiqueta: 'Nombre', attrs: 'autocomplete="given-name" required' }) %>
+          <%- include('partials/campo', { nombre: 'apellido', etiqueta: 'Apellido', attrs: 'autocomplete="family-name" required' }) %>
+        </div>
+
+        <%- include('partials/campo', { nombre: 'email', etiqueta: 'Email', tipo: 'email', placeholder: 'tu@email.com', attrs: 'autocomplete="email" autocapitalize="off" required' }) %>
+        <%- include('partials/campo', { nombre: 'telefono', etiqueta: 'Teléfono', tipo: 'tel', opcional: true, placeholder: '11 1234 5678', attrs: 'autocomplete="tel" inputmode="tel"' }) %>
+
+        <div class="registro__clave">
+          <%- include('partials/campo-clave', { nombre: 'password', etiqueta: 'Contraseña', autocomplete: 'new-password', describe: 'requisitos' }) %>
+
+          <!-- Medidor de seguridad y requisitos (lo actualiza registro.js) -->
+          <div class="fuerza" aria-hidden="true">
+            <div class="fuerza__barras"><span></span><span></span><span></span><span></span></div>
+            <p class="fuerza__texto" id="fuerzaTexto">Seguridad de la contraseña</p>
+          </div>
+          <ul class="requisitos" id="requisitos">
+            <li data-requisito="largo">8 caracteres o más</li>
+            <li data-requisito="letra">Al menos una letra</li>
+            <li data-requisito="numero">Al menos un número</li>
+          </ul>
+        </div>
+
+        <%- include('partials/campo-clave', { nombre: 'confirmar', etiqueta: 'Repetir contraseña', autocomplete: 'new-password' }) %>
+
+        <div class="registro__checks">
+          <div class="campo <%= errorTerminos ? 'campo--error' : '' %>">
+            <label class="check-simple">
+              <input type="checkbox" name="terminos" id="terminos" value="1" <%= datos.terminos ? 'checked' : '' %> aria-describedby="terminos-error">
+              <span class="check-simple__caja"></span>
+              <span>Acepto los <a href="#" data-proximamente>términos y condiciones</a> y la <a href="#" data-proximamente>política de privacidad</a></span>
+            </label>
+            <p class="campo__error" id="terminos-error" aria-live="polite"><%= errorTerminos %></p>
+          </div>
+
+          <label class="check-simple">
+            <input type="checkbox" name="newsletter" value="1" <%= datos.newsletter ? 'checked' : '' %>>
+            <span class="check-simple__caja"></span>
+            Quiero recibir novedades y descuentos
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn--solido acceso__enviar" id="btnCrear">Crear cuenta</button>
+      </form>
+
+      <p class="acceso__registro">
+        ¿Ya tenés cuenta? <a href="/login?volver=<%= encodeURIComponent(volver) %>">Iniciá sesión</a>
+      </p>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/registro.js"></script>
+</body>
+</html>

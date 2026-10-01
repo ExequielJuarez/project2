@@ -1,0 +1,64 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  const cuentasDemo = [
+    { nombre: "Ana Pérez", email: "ana.perez@gmail.com" },
+    { nombre: "Juan Gómez", email: "juan.gomez@gmail.com" },
+  ];
+%>
+
+  <!-- ═════════════ GOOGLE (MODO DEMO) ═════════════ -->
+  <main class="gdemo contenedor">
+    <section class="gdemo__tarjeta" aria-labelledby="tituloGoogle">
+      <p class="gdemo__marca">(GOOGLE) · Modo demo</p>
+      <h1 class="gdemo__titulo" id="tituloGoogle">Elegí una cuenta</h1>
+      <p class="gdemo__bajada">para continuar en <strong>Matilda Boutique</strong></p>
+
+      <ul class="gdemo__cuentas">
+        <% cuentasDemo.forEach(c => { %>
+          <li>
+            <form action="/auth/google/demo" method="POST">
+              <input type="hidden" name="volver" value="<%= volver %>">
+              <input type="hidden" name="nombre" value="<%= c.nombre %>">
+              <input type="hidden" name="email" value="<%= c.email %>">
+              <button type="submit" class="gdemo__cuenta">
+                <span class="gdemo__avatar"><%= c.nombre.charAt(0) %></span>
+                <span class="gdemo__datos">
+                  <strong><%= c.nombre %></strong>
+                  <small><%= c.email %></small>
+                </span>
+                <span class="gdemo__flecha" aria-hidden="true">→</span>
+              </button>
+            </form>
+          </li>
+        <% }) %>
+        <li>
+          <button type="button" class="gdemo__cuenta" id="otraCuenta" aria-expanded="<%= Object.keys(errores).length ? 'true' : 'false' %>" aria-controls="formOtra">
+            <span class="gdemo__avatar gdemo__avatar--vacio">+</span>
+            <span class="gdemo__datos"><strong>Usar otra cuenta</strong></span>
+          </button>
+        </li>
+      </ul>
+
+      <form action="/auth/google/demo" method="POST" class="gdemo__otra" id="formOtra" novalidate <%= Object.keys(errores).length ? '' : 'hidden' %>>
+        <input type="hidden" name="volver" value="<%= volver %>">
+        <%- include('partials/campo', { nombre: 'nombre', etiqueta: 'Nombre y apellido', attrs: 'autocomplete="name" required' }) %>
+        <%- include('partials/campo', { nombre: 'email', etiqueta: 'Email de Google', tipo: 'email', placeholder: 'tu@gmail.com', attrs: 'autocomplete="email" autocapitalize="off" required' }) %>
+        <button type="submit" class="btn btn--solido">Continuar</button>
+      </form>
+
+      <div class="gdemo__nota">
+        <strong>Esto es una simulación.</strong>
+        Para usar el inicio de sesión real con Google, completá
+        <code>GOOGLE_CLIENT_ID</code> y <code>GOOGLE_CLIENT_SECRET</code> en el archivo <code>.env</code>.
+      </div>
+
+      <a href="/login?volver=<%= encodeURIComponent(volver) %>" class="gdemo__volver">← Volver</a>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/google-demo.js"></script>
+</body>
+</html>

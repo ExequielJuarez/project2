@@ -1,0 +1,33 @@
+<%
+  // Encabezado y pestañas de "Mi cuenta". cuentaActiva: pedidos | datos
+  const pestanas = [
+    { id: "pedidos", texto: "Mis pedidos", href: "/mi-cuenta/pedidos" },
+    { id: "datos", texto: "Mis datos", href: "/mi-cuenta/datos" },
+    { id: "favoritos", texto: "Favoritos", href: "/favoritos" },
+  ];
+%>
+<section class="cuenta-hero contenedor">
+  <nav class="migas" aria-label="Ruta">
+    <a href="/">Inicio</a>
+    <span>/</span>
+    <a href="/mi-cuenta">Mi cuenta</a>
+    <span>/</span>
+    <span aria-current="page"><%= titulo %></span>
+  </nav>
+
+  <div class="cuenta-hero__fila">
+    <div>
+      <p class="cuenta-hero__hola">Hola, <%= usuarioLocal.nombre %></p>
+      <h1 class="cuenta-hero__titulo"><%= titulo %></h1>
+    </div>
+    <form action="/logout" method="POST">
+      <button type="submit" class="cuenta-hero__salir">Cerrar sesión</button>
+    </form>
+  </div>
+
+  <nav class="cuenta-tabs" aria-label="Mi cuenta">
+    <% pestanas.forEach((p) => { %>
+      <a href="<%= p.href %>" class="cuenta-tabs__link <%= cuentaActiva === p.id ? 'activo' : '' %>" <%- cuentaActiva === p.id ? 'aria-current="page"' : '' %>><%= p.texto %></a>
+    <% }) %>
+  </nav>
+</section>

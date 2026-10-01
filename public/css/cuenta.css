@@ -1,0 +1,242 @@
+/* ==========================================================
+   MI CUENTA — Piezas compartidas por Mis pedidos, el detalle
+   del pedido y Mis datos (usa base.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+/* ---------- Encabezado ---------- */
+.cuenta-hero {
+  padding-top: 24px;
+}
+
+.cuenta-hero__fila {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.cuenta-hero__hola {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.cuenta-hero__titulo {
+  margin-top: 6px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(42px, 9vw, 76px);
+  font-weight: 500;
+  line-height: 0.95;
+}
+
+.cuenta-hero__salir {
+  flex: none;
+  padding-bottom: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gris-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cuenta-hero__salir:hover {
+  color: var(--negro);
+}
+
+/* ---------- Pestañas ---------- */
+.cuenta-tabs {
+  display: flex;
+  gap: 22px;
+  margin-top: 26px;
+  border-bottom: 1px solid var(--gris-200);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cuenta-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.cuenta-tabs__link {
+  flex: none;
+  padding: 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transicion), border-color var(--transicion);
+}
+
+.cuenta-tabs__link:hover {
+  color: var(--negro);
+}
+
+.cuenta-tabs__link.activo {
+  color: var(--negro);
+  border-color: var(--negro);
+}
+
+.cuenta-cuerpo {
+  padding-top: 24px;
+  padding-bottom: 72px;
+}
+
+/* ---------- Estado del pedido (para el cliente) ---------- */
+.estado-cliente {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--negro);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.estado-cliente::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.estado-cliente--ok {
+  background: var(--negro);
+  color: var(--blanco);
+}
+
+.estado-cliente--curso::before {
+  background: transparent;
+  border: 1.5px solid currentColor;
+}
+
+.estado-cliente--alerta {
+  border-style: dashed;
+}
+
+.estado-cliente--alerta::before {
+  animation: latido 1.6s ease-in-out infinite;
+}
+
+.estado-cliente--cancelado {
+  border-color: var(--gris-400);
+  color: var(--gris-600);
+}
+
+.estado-cliente--cancelado::before {
+  background: transparent;
+  border-radius: 0;
+  height: 1.5px;
+  width: 8px;
+  background-color: currentColor;
+}
+
+@keyframes latido {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estado-cliente--alerta::before {
+    animation: none;
+  }
+}
+
+/* ---------- Miniaturas de productos ---------- */
+.miniatura {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  aspect-ratio: 4 / 5;
+  flex: none;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 8px, rgba(0, 0, 0, 0.04) 8px 9px),
+    var(--gris-100);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gris-600);
+}
+
+.miniatura--oscura {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 8px, rgba(255, 255, 255, 0.05) 8px 9px),
+    var(--grafito);
+  color: var(--gris-400);
+}
+
+.miniatura img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Vacío ---------- */
+.cuenta-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 56px 20px;
+  border: 1px dashed var(--gris-400);
+  text-align: center;
+}
+
+.cuenta-vacio h2 {
+  font-family: var(--fuente-titulos);
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.cuenta-vacio p {
+  max-width: 360px;
+  color: var(--gris-600);
+}
+
+.cuenta-vacio .btn {
+  margin-top: 8px;
+}
+
+.cuenta-vacio--filtro {
+  margin-top: 12px;
+  padding: 32px 20px;
+  color: var(--gris-600);
+}
+
+.cuenta-vacio[hidden] {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .cuenta-hero {
+    padding-top: 36px;
+  }
+
+  .cuenta-tabs {
+    gap: 32px;
+    margin-top: 34px;
+  }
+
+  .cuenta-cuerpo {
+    padding-top: 36px;
+    padding-bottom: 96px;
+  }
+}

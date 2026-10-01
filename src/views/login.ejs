@@ -1,0 +1,85 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+  <div class="contenedor">
+    <nav class="migas migas--acceso" aria-label="Ruta">
+      <a href="/">Inicio</a>
+      <span>/</span>
+      <span aria-current="page">Iniciar sesión</span>
+    </nav>
+  </div>
+
+  <!-- ═════════════ ACCESO ═════════════ -->
+  <main class="acceso contenedor">
+
+    <!-- Panel de marca (PC / tablet) -->
+    <section class="acceso__panel" aria-label="Beneficios de tu cuenta">
+      <span class="acceso__panel-imagen" aria-hidden="true">(IMAGEN DE MARCA)</span>
+
+      <div class="acceso__panel-texto">
+        <p class="acceso__etiqueta">Tu cuenta</p>
+        <p class="acceso__frase">Todo lo que elegiste, <em>en un solo lugar.</em></p>
+
+        <ul class="acceso__beneficios">
+          <li><span>01</span> Seguí tus pedidos en tiempo real</li>
+          <li><span>02</span> Guardá tus favoritos para después</li>
+          <li><span>03</span> Comprá más rápido con tus datos guardados</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Formulario -->
+    <section class="acceso__form" aria-labelledby="tituloLogin">
+      <h1 class="acceso__titulo" id="tituloLogin">Iniciar sesión</h1>
+      <p class="acceso__bajada">Ingresá con tu email y contraseña.</p>
+
+      <% if (errorGeneral) { %>
+        <div class="aviso aviso--error" role="alert"><%= errorGeneral %></div>
+      <% } %>
+
+      <form action="/login" method="POST" id="formLogin" class="acceso__campos" novalidate>
+        <input type="hidden" name="volver" value="<%= volver %>">
+
+        <%- include('partials/campo', { nombre: 'email', etiqueta: 'Email', tipo: 'email', placeholder: 'tu@email.com', attrs: 'autocomplete="email" autocapitalize="off" required autofocus' }) %>
+
+        <%- include('partials/campo-clave', { nombre: 'password', etiqueta: 'Contraseña', autocomplete: 'current-password', enlace: { texto: '¿La olvidaste?', href: '#' } }) %>
+
+        <label class="check-simple">
+          <input type="checkbox" name="recordar" value="1" <%= datos.recordar ? 'checked' : '' %>>
+          <span class="check-simple__caja"></span>
+          Mantener la sesión iniciada
+        </label>
+
+        <button type="submit" class="btn btn--solido acceso__enviar" id="btnIngresar">Ingresar</button>
+      </form>
+
+      <div class="separador"><span>o</span></div>
+
+      <div class="acceso__sociales">
+        <a href="/auth/google?volver=<%= encodeURIComponent(volver) %>" class="btn btn--linea">(GOOGLE) Continuar con Google</a>
+        <button type="button" class="btn btn--linea" data-proximamente>(APPLE) Continuar con Apple</button>
+      </div>
+
+      <p class="acceso__registro">
+        ¿No tenés cuenta? <a href="/registro?volver=<%= encodeURIComponent(volver) %>">Creá una</a>
+      </p>
+
+      <!-- Solo en desarrollo: datos para probar (con NODE_ENV=production no se muestra) -->
+      <% if (mostrarDemo) { %>
+      <aside class="demo" aria-label="Usuario de prueba">
+        <p class="demo__titulo">Usuarios de prueba</p>
+        <p><span>Cliente</span> demo@tienda.com · Demo1234</p>
+        <p><span>Admin</span> admin@tienda.com · Admin1234</p>
+        <div class="demo__botones">
+          <button type="button" class="demo__usar" data-demo-email="demo@tienda.com" data-demo-clave="Demo1234">Cliente</button>
+          <button type="button" class="demo__usar" data-demo-email="admin@tienda.com" data-demo-clave="Admin1234">Admin</button>
+        </div>
+      </aside>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/login.js"></script>
+</body>
+</html>

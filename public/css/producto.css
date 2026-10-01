@@ -1,0 +1,894 @@
+/* ==========================================================
+   PRODUCTO — Estilos propios de la vista (usa base.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.migas--producto {
+  flex-wrap: wrap;
+  row-gap: 2px;
+  padding: 18px 0;
+}
+
+.migas--producto [aria-current] {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.producto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  padding-bottom: 56px;
+}
+
+/* ==========================================================
+   GALERÍA
+   ========================================================== */
+.galeria {
+  min-width: 0;
+  margin: 0 calc(var(--gutter) * -1);
+}
+
+.galeria__visor {
+  position: relative;
+}
+
+.galeria__pista {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.galeria__pista::-webkit-scrollbar {
+  display: none;
+}
+
+/* Foto (placeholder) */
+.foto {
+  position: relative;
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 5;
+  scroll-snap-align: start;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 16px, rgba(0, 0, 0, 0.035) 16px 17px),
+    var(--gris-100);
+  color: var(--negro);
+  cursor: zoom-in;
+  overflow: hidden;
+}
+
+.foto--oscura {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 16px, rgba(255, 255, 255, 0.05) 16px 17px),
+    var(--grafito);
+  color: var(--blanco);
+}
+
+.foto__texto {
+  padding: 10px 16px;
+  border: 1px dashed currentColor;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  opacity: 0.55;
+}
+
+.foto__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto__zoom {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--blanco);
+  color: var(--negro);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity var(--transicion), transform var(--transicion);
+}
+
+.foto:hover .foto__zoom,
+.foto:focus-visible .foto__zoom {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.galeria__etiqueta {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  background: var(--blanco);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.galeria__contador {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 10px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+
+.galeria__progreso {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.galeria__progreso span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--negro);
+  transition: width var(--transicion);
+}
+
+/* Miniaturas numeradas */
+.galeria__miniaturas {
+  display: flex;
+  gap: 8px;
+  padding: 12px var(--gutter) 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.galeria__miniaturas::-webkit-scrollbar {
+  display: none;
+}
+
+.miniatura {
+  flex: 0 0 56px;
+  height: 70px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 6px;
+  background: var(--gris-100);
+  border: 1px solid transparent;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--gris-600);
+  opacity: 0.6;
+  transition: opacity var(--transicion), border-color var(--transicion);
+}
+
+.miniatura--oscura {
+  background: var(--grafito);
+  color: var(--gris-400);
+}
+
+.miniatura:hover {
+  opacity: 1;
+}
+
+.miniatura--foto {
+  padding: 0;
+  overflow: hidden;
+}
+
+.miniatura--foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.miniatura.activa {
+  opacity: 1;
+  border-color: var(--negro);
+}
+
+/* ==========================================================
+   INFO Y COMPRA
+   ========================================================== */
+.info {
+  min-width: 0;
+}
+
+.info__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.info__categoria,
+.info__codigo {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.info__titulo {
+  margin-top: 10px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(32px, 7vw, 46px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+/* Precio */
+.precio {
+  margin-top: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--negro);
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.precio__lista {
+  font-family: var(--fuente-titulos);
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.precio__transferencia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--gris-600);
+}
+
+.precio__transferencia strong {
+  color: var(--negro);
+}
+
+.precio__tag {
+  padding: 2px 7px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.precio__cuotas {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.precio__cuotas strong {
+  color: var(--negro);
+}
+
+.info__resumen {
+  margin-top: 18px;
+  color: var(--gris-600);
+}
+
+/* Variantes */
+.opcion {
+  margin-top: 24px;
+}
+
+.opcion__titulo {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.opcion__titulo span {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--gris-600);
+  font-size: 13px;
+}
+
+.opcion__colores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.swatch {
+  cursor: pointer;
+}
+
+.swatch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.swatch__muestra {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--muestra);
+  border: 1px solid var(--gris-200);
+  box-shadow: 0 0 0 3px var(--hueso), 0 0 0 3px transparent;
+  transition: box-shadow var(--transicion);
+}
+
+.swatch input:checked + .swatch__muestra {
+  box-shadow: 0 0 0 3px var(--hueso), 0 0 0 4px var(--negro);
+}
+
+.swatch input:focus-visible + .swatch__muestra {
+  outline: 2px solid var(--negro);
+  outline-offset: 5px;
+}
+
+/* Cantidad + botones */
+.compra {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  margin-top: 26px;
+}
+
+.compra__agregar {
+  height: 50px;
+  padding: 0 10px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.compra__fav.tarjeta__fav {
+  position: static;
+  width: 50px;
+  height: 50px;
+  border-radius: 0;
+  border: 1px solid var(--negro);
+  background: transparent;
+}
+
+.compra__ahora {
+  width: 100%;
+  height: 50px;
+  margin-top: 8px;
+}
+
+.stock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--gris-600);
+}
+
+.stock strong {
+  color: var(--negro);
+}
+
+.stock__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--negro);
+  animation: latido 2s infinite;
+}
+
+.stock--agotado .stock__punto {
+  background: transparent;
+  border: 1px solid var(--negro);
+  animation: none;
+}
+
+.compra button[disabled],
+.compra__ahora[disabled],
+.barra-compra .btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@keyframes latido {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
+  }
+}
+
+/* Envío */
+.envio {
+  margin-top: 26px;
+  padding: 18px;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+}
+
+.envio__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.envio__fila {
+  display: flex;
+  margin-top: 10px;
+  border-bottom: 1px solid var(--negro);
+}
+
+.envio__fila input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+
+.envio__fila button {
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.envio__resultados {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.envio__resultados li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gris-100);
+}
+
+.envio__resultados li:last-child {
+  border-bottom: 0;
+}
+
+.envio__resultados small {
+  display: block;
+  color: var(--gris-600);
+}
+
+.envio__error {
+  color: var(--gris-600);
+}
+
+/* Ventajas */
+.ventajas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 18px;
+  border: 1px solid var(--gris-200);
+}
+
+.ventajas li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--gris-600);
+}
+
+.ventajas li + li {
+  border-left: 1px solid var(--gris-200);
+}
+
+.ventajas strong {
+  display: block;
+  color: var(--negro);
+}
+
+.info__acordeones {
+  margin-top: 20px;
+  border-top: 1px solid var(--gris-200);
+}
+
+.info__acordeones .acordeon__contenido {
+  gap: 8px;
+  font-size: 14px;
+  color: var(--gris-600);
+}
+
+.info__acordeones strong {
+  color: var(--negro);
+}
+
+.info__logos {
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+/* ==========================================================
+   DESCRIPCIÓN Y FICHA TÉCNICA
+   ========================================================== */
+.detalle {
+  background: var(--negro);
+  color: var(--gris-400);
+}
+
+.detalle__grilla {
+  display: grid;
+  gap: 48px;
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.detalle__etiqueta {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.detalle__titulo {
+  margin: 10px 0 18px;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(34px, 7vw, 56px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  color: var(--blanco);
+}
+
+.detalle__texto > p + p {
+  margin-top: 14px;
+}
+
+.destacados {
+  display: grid;
+  gap: 1px;
+  margin-top: 28px;
+  list-style: none;
+  background: var(--gris-900);
+  border: 1px solid var(--gris-900);
+}
+
+.destacados li {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--negro);
+  color: var(--blanco);
+  font-size: 14px;
+}
+
+.destacados__num {
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  color: var(--gris-600);
+}
+
+.ficha__lista {
+  margin-top: 14px;
+}
+
+.ficha__fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gris-900);
+  font-size: 14px;
+}
+
+.ficha__fila:first-child {
+  border-top: 1px solid var(--gris-600);
+}
+
+.ficha__fila dd {
+  color: var(--blanco);
+  text-align: right;
+}
+
+/* ==========================================================
+   BARRA DE COMPRA FIJA
+   ========================================================== */
+.barra-compra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--gutter);
+  background: var(--blanco);
+  border-top: 1px solid var(--negro);
+  transform: translateY(100%);
+  transition: transform var(--transicion);
+}
+
+.barra-compra.visible {
+  transform: translateY(0);
+}
+
+.barra-compra__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.barra-compra__nombre {
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--gris-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-compra__precio {
+  font-family: var(--fuente-titulos);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.barra-compra .btn {
+  height: 44px;
+}
+
+/* El botón de WhatsApp sube cuando aparece la barra */
+body.con-barra .whatsapp {
+  bottom: 84px;
+}
+
+.whatsapp {
+  transition: transform var(--transicion), bottom var(--transicion);
+}
+
+/* ==========================================================
+   VISOR A PANTALLA COMPLETA
+   ========================================================== */
+.visor {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 8, 8, 0.96);
+  color: var(--blanco);
+  animation: fundido 0.25s both;
+}
+
+.visor[hidden] {
+  display: none;
+}
+
+@keyframes fundido {
+  from {
+    opacity: 0;
+  }
+}
+
+.visor__foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(92vw, calc(80vh * 0.8));
+  aspect-ratio: 4 / 5;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 16px, rgba(0, 0, 0, 0.035) 16px 17px),
+    var(--gris-100);
+  color: var(--negro);
+}
+
+.visor__foto.foto--oscura {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 16px, rgba(255, 255, 255, 0.05) 16px 17px),
+    var(--gris-900);
+  color: var(--blanco);
+}
+
+.visor__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--negro);
+}
+
+.visor__cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--blanco);
+}
+
+.visor__flecha {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--blanco);
+  font-size: 18px;
+  transform: translateY(-50%);
+  transition: background var(--transicion), color var(--transicion);
+}
+
+.visor__flecha:hover {
+  background: var(--blanco);
+  color: var(--negro);
+}
+
+.visor__flecha--prev {
+  left: 12px;
+}
+
+.visor__flecha--sig {
+  right: 12px;
+}
+
+.visor__contador {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  transform: translateX(-50%);
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .migas--producto {
+    padding: 24px 0;
+  }
+
+  .producto {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 36px;
+    align-items: start;
+  }
+
+  .galeria {
+    position: sticky;
+    top: calc(var(--alto-header) + 16px);
+    margin: 0;
+  }
+
+  .galeria__miniaturas {
+    padding: 12px 0 0;
+  }
+
+  .miniatura {
+    flex-basis: 64px;
+    height: 80px;
+  }
+
+  .detalle__grilla {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 56px;
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .visor__flecha--prev {
+    left: 32px;
+  }
+
+  .visor__flecha--sig {
+    right: 32px;
+  }
+}
+
+/* ==========================================================
+   PC ≥ 1100px
+   ========================================================== */
+@media (min-width: 1100px) {
+  .producto {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 64px;
+    padding-bottom: 96px;
+  }
+
+  /* Mosaico: la primera foto grande y el resto de a pares */
+  .galeria {
+    position: static;
+  }
+
+  .galeria__pista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .galeria__pista .foto:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Si la última foto queda sola, ocupa todo el ancho en apaisado */
+  .galeria__pista .foto:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+    aspect-ratio: 3 / 2;
+  }
+
+  .galeria__miniaturas,
+  .galeria__contador,
+  .galeria__progreso {
+    display: none;
+  }
+
+  .galeria__etiqueta {
+    top: 18px;
+    left: 18px;
+  }
+
+  /* Sticky "inteligente": si la columna es más alta que la pantalla,
+     producto.js calcula --info-top para que se fije por abajo */
+  .info {
+    position: sticky;
+    top: var(--info-top, calc(var(--alto-header) + 47px + 24px));
+  }
+
+  .info__titulo {
+    font-size: 48px;
+  }
+
+  .detalle__grilla {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 120px;
+    padding-top: 110px;
+    padding-bottom: 110px;
+  }
+
+  .barra-compra {
+    display: none;
+  }
+
+  body.con-barra .whatsapp {
+    bottom: 24px;
+  }
+}

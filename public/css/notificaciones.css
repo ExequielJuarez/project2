@@ -1,0 +1,365 @@
+/* ==========================================================
+   NOTIFICACIONES — Campanita y avisos de compras (solo admins)
+   Se carga en la tienda y en el panel cuando entra un admin.
+   Mobile first · Tablet ≥ 768px
+   ========================================================== */
+
+.notif {
+  position: relative;
+}
+
+.notif__btn {
+  position: relative;
+}
+
+.notif__contador {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--negro);
+  color: var(--blanco);
+  border: 2px solid var(--blanco);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+}
+
+.notif__contador[hidden] {
+  display: none;
+}
+
+/* La campanita "suena" cuando llega algo */
+.notif__btn.sonando svg {
+  animation: campana 0.9s ease;
+  transform-origin: 50% 10%;
+}
+
+@keyframes campana {
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-5deg); }
+  75% { transform: rotate(2deg); }
+}
+
+/* Panel desplegable */
+.notif__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -8px;
+  z-index: 70;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--blanco);
+  border: 1px solid var(--negro);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+  animation: aparecer 0.2s both;
+}
+
+.notif__panel[hidden] {
+  display: none;
+}
+
+.notif__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--gris-200);
+}
+
+.notif__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.notif__leer,
+.notif__opcion {
+  font-size: 11px;
+  color: var(--gris-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.notif__leer:hover,
+.notif__opcion:hover {
+  color: var(--negro);
+}
+
+.notif__lista {
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.notif__item a {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gris-100);
+  transition: background 0.15s;
+}
+
+.notif__item a:hover {
+  background: var(--gris-100);
+}
+
+.notif__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--negro);
+  border-radius: 50%;
+}
+
+/* Sin leer: ícono negro relleno y un punto */
+.notif__item--nueva .notif__icono {
+  background: var(--negro);
+  color: var(--blanco);
+}
+
+.notif__texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.notif__texto strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.notif__item--nueva .notif__texto strong::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--negro);
+}
+
+.notif__texto span {
+  overflow: hidden;
+  color: var(--gris-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notif__texto small {
+  font-size: 11px;
+  color: var(--gris-400);
+}
+
+.notif__vacio {
+  padding: 28px 16px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--gris-600);
+}
+
+.notif__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--gris-200);
+}
+
+.notif__link {
+  margin-right: auto;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================
+   AVISOS EMERGENTES (compra nueva)
+   ========================================================== */
+/* Debajo del header, para no tapar la campanita ni el carrito */
+.notif-avisos {
+  position: fixed;
+  top: 110px;
+  left: 12px;
+  right: 12px;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.aviso-compra {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+  padding: 16px;
+  background: var(--negro);
+  color: var(--blanco);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  animation: entrarAviso 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.aviso-compra.saliendo {
+  animation: salirAviso 0.3s ease both;
+}
+
+@keyframes entrarAviso {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+}
+
+@keyframes salirAviso {
+  to {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+}
+
+.aviso-compra__icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--blanco);
+  color: var(--negro);
+}
+
+.aviso-compra__texto {
+  min-width: 0;
+}
+
+.aviso-compra__etiqueta {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gris-400);
+}
+
+.aviso-compra__titulo {
+  margin-top: 2px;
+  font-family: var(--fuente-titulos);
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.aviso-compra__mensaje {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--gris-200);
+}
+
+.aviso-compra__ver {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: var(--blanco);
+  color: var(--negro);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.aviso-compra__ver:hover {
+  background: var(--gris-200);
+}
+
+.aviso-compra__cerrar {
+  width: 28px;
+  height: 28px;
+  color: var(--gris-400);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.aviso-compra__cerrar:hover {
+  color: var(--blanco);
+}
+
+/* Barra que muestra cuánto falta para que se cierre solo */
+.aviso-compra__tiempo {
+  grid-column: 1 / -1;
+  height: 2px;
+  margin: 4px -16px -16px;
+  background: var(--gris-900);
+}
+
+.aviso-compra__tiempo span {
+  display: block;
+  height: 100%;
+  background: var(--blanco);
+  animation: tiempoAviso linear forwards;
+  animation-duration: inherit;
+}
+
+.aviso-compra:hover .aviso-compra__tiempo span {
+  animation-play-state: paused;
+}
+
+@keyframes tiempoAviso {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0;
+  }
+}
+
+/* En la tienda, en celular la campanita no entra en el header:
+   queda un punto en el avatar de la cuenta y los avisos emergentes */
+.header__acciones .notif {
+  display: none;
+}
+
+.cuenta__btn.con-avisos::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--negro);
+  border: 2px solid var(--blanco);
+}
+
+/* ==========================================================
+   TABLET ≥ 768px
+   ========================================================== */
+@media (min-width: 768px) {
+  .notif-avisos {
+    left: auto;
+    top: 96px;
+    right: 20px;
+    width: 380px;
+  }
+
+  .header__acciones .notif {
+    display: block;
+  }
+
+  .cuenta__btn.con-avisos::after {
+    display: none;
+  }
+}

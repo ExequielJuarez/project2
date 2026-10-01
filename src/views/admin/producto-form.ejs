@@ -1,0 +1,153 @@
+<%- include('../partials/admin-inicio') %>
+
+<%
+  const editando = Boolean(producto);
+  const accion = editando ? `/admin/productos/${producto.id}?_method=PUT` : "/admin/productos";
+  const d = datos;
+  // Fotos que ya tiene el producto (la primera es la principal)
+  const fotos = editando ? producto.imagenes : [];
+  const imagenActual = fotos[0] ? fotos[0].ruta : null;
+  const errorImagenes = errores.imagenes ? errores.imagenes.msg : "";
+%>
+
+      <div class="admin-cabecera">
+        <div>
+          <p class="admin-cabecera__migas">
+            <a href="/admin">Panel</a> / <a href="/admin/productos">Productos</a> /
+            <%= editando ? 'Editar' : 'Nuevo' %>
+          </p>
+          <h1 class="admin-cabecera__titulo"><%= editando ? 'Editar producto' : 'Nuevo producto' %></h1>
+          <% if (editando) { %><p class="admin-cabecera__bajada">#<%= String(producto.id).padStart(4, '0') %> · <%= producto.nombre %></p><% } %>
+        </div>
+      </div>
+
+      <% if (Object.keys(errores).length) { %>
+        <div class="aviso aviso--error" role="alert" tabindex="-1" id="resumenErrores">
+          <strong>Revisá estos datos:</strong>
+          <ul>
+            <% Object.entries(errores).forEach(([campo, e]) => { %>
+              <li><a href="#<%= campo %>"><%= e.msg %></a></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <div class="form-producto">
+        <form action="<%= accion %>" method="POST" enctype="multipart/form-data" id="formProducto" class="form-producto__form" novalidate>
+
+          <section class="panel">
+            <h2 class="panel__titulo">Información</h2>
+            <div class="campos-admin">
+              <%- include('../partials/campo', { nombre: 'nombre', etiqueta: 'Nombre', clase: 'campo--completo', placeholder: 'Ej: Producto Madera Torneada a Mano', attrs: 'maxlength="90" required' }) %>
+              <%- include('../partials/campo', { nombre: 'categoria', etiqueta: 'Categoría', tipo: 'select', opciones: categorias }) %>
+              <div class="campo <%= errores.color ? 'campo--error' : '' %>">
+                <label class="campo__label" for="color">Color</label>
+                <select class="campo__control" id="color" name="color" aria-describedby="color-error">
+                  <option value="">Elegí una opción</option>
+                  <% colores.forEach(c => { %>
+                    <option value="<%= c.valor %>" <%= d.color === c.valor ? 'selected' : '' %>><%= c.nombre %></option>
+                  <% }) %>
+                </select>
+                <p class="campo__error" id="color-error"><%= errores.color ? errores.color.msg : '' %></p>
+              </div>
+              <%- include('../partials/campo', { nombre: 'talles', etiqueta: 'Talles disponibles', opcional: true, clase: 'campo--completo', placeholder: 'Ej: S, M, L, XL  (vacío = talle único)', attrs: 'maxlength="60"' }) %>
+              <%- include('../partials/campo', { nombre: 'etiqueta', etiqueta: 'Etiqueta destacada', opcional: true, clase: 'campo--completo', placeholder: 'Ej: Nuevo, Más vendido, Exclusivo', attrs: 'maxlength="24"' }) %>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__titulo">Precio y costo</h2>
+            <div class="campos-admin">
+              <%- include('../partials/campo', { nombre: 'precio', etiqueta: 'Precio de venta ($)', tipo: 'number', placeholder: '0', attrs: 'min="1" step="0.01" inputmode="decimal" required' }) %>
+              <%- include('../partials/campo', { nombre: 'costo', etiqueta: 'Costo ($)', tipo: 'number', placeholder: '0', attrs: 'min="0" step="0.01" inputmode="decimal" required' }) %>
+            </div>
+            <dl class="rentabilidad" aria-live="polite">
+              <div><dt>Ganancia por unidad</dt><dd id="gananciaUnidad">—</dd></div>
+              <div><dt>Margen</dt><dd id="margen">—</dd></div>
+              <div><dt>Precio con transferencia</dt><dd id="precioTransferencia">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__titulo">Stock</h2>
+            <div class="campos-admin">
+              <%- include('../partials/campo', { nombre: 'stock', etiqueta: 'Unidades disponibles', tipo: 'number', attrs: 'min="0" step="1" inputmode="numeric" required' }) %>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel__cabecera">
+              <h2 class="panel__titulo">Imágenes</h2>
+              <span class="fotos-contador"><span id="cantidadFotos"><%= fotos.length %></span> / <%= MAX_IMAGENES %></span>
+            </div>
+            <p class="panel__bajada fotos-ayuda">La <strong>principal</strong> es la que aparece en el catálogo; el resto se ven en la ficha del producto.</p>
+
+            <div class="campo <%= errorImagenes ? 'campo--error' : '' %>">
+              <ul class="fotos-admin" id="fotosAdmin" data-max="<%= MAX_IMAGENES %>">
+                <% fotos.forEach((f, n) => { %>
+                  <li class="foto-admin" data-existente>
+                    <img src="<%= f.ruta %>" alt="Foto <%= n + 1 %>">
+                    <label class="foto-admin__principal">
+                      <input type="radio" name="principal" value="e-<%= f.id %>" <%= n === 0 ? 'checked' : '' %>>
+                      <span>Principal</span>
+                    </label>
+                    <label class="foto-admin__quitar" title="Quitar esta foto">
+                      <input type="checkbox" name="quitarImagenes" value="<%= f.id %>">
+                      <span>Quitar</span>
+                    </label>
+                  </li>
+                <% }) %>
+              </ul>
+
+              <label class="subida" for="imagenes" id="zonaSubida">
+                <input type="file" id="imagenes" name="imagenes" multiple accept="image/jpeg,image/png,image/webp" aria-describedby="imagenes-ayuda imagenes-error">
+                <span class="subida__icono" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="26" height="26"><path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="subida__texto">
+                  <strong>Agregar fotos</strong>
+                  <small id="imagenes-ayuda">Elegí o arrastrá varias a la vez · JPG, PNG o WEBP · hasta 2 MB c/u · ideal 1000 × 1250 px</small>
+                </span>
+              </label>
+              <p class="campo__error" id="imagenes-error"><%= errorImagenes %></p>
+            </div>
+          </section>
+
+          <div class="form-producto__acciones">
+            <a href="<%= editando ? '/admin/productos/' + producto.id : '/admin/productos' %>" class="btn btn--linea btn--blanco">Cancelar</a>
+            <button type="submit" class="btn btn--solido" id="btnGuardar"><%= editando ? 'Guardar cambios' : 'Crear producto' %></button>
+          </div>
+        </form>
+
+        <!-- Vista previa de cómo se ve en la tienda -->
+        <aside class="vista-previa" aria-label="Vista previa en la tienda">
+          <p class="vista-previa__titulo">Así se ve en la tienda</p>
+          <div class="vista-previa__tarjeta">
+            <div class="vista-previa__imagen" id="previaImagen">
+              <% if (imagenActual) { %><img src="<%= imagenActual %>" alt=""><% } else { %><span>(IMAGEN)</span><% } %>
+              <span class="vista-previa__etiqueta" id="previaEtiqueta" <%= d.etiqueta ? '' : 'hidden' %>><%= d.etiqueta %></span>
+            </div>
+            <p class="vista-previa__categoria" id="previaCategoria"><%= d.categoria || 'Categoría' %></p>
+            <p class="vista-previa__nombre" id="previaNombre"><%= d.nombre || 'Nombre del producto' %></p>
+            <p class="vista-previa__precio" id="previaPrecio"><%= d.precio ? formatoPrecio(Number(d.precio)) : '$0,00' %></p>
+            <p class="vista-previa__transferencia" id="previaTransferencia"></p>
+          </div>
+        </aside>
+      </div>
+
+      <% if (editando) { %>
+        <form action="/admin/productos/<%= producto.id %>?_method=DELETE" method="POST" class="zona-peligro"
+              data-confirmar="Se va a borrar “<%= producto.nombre %>” del catálogo. Esta acción no se puede deshacer."
+              data-confirmar-titulo="¿Eliminar producto?">
+          <div>
+            <strong>Eliminar producto</strong>
+            <p>Deja de mostrarse en la tienda. Los pedidos ya hechos no se modifican.</p>
+          </div>
+          <button type="submit" class="btn btn--linea btn--chico btn--blanco">Eliminar</button>
+        </form>
+      <% } %>
+
+<%- include('../partials/admin-fin') %>
+<script src="/js/admin-producto-form.js"></script>
+</body>
+</html>

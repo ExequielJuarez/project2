@@ -1,0 +1,65 @@
+<%
+  // Resumen del pedido del checkout (desplegable en celular, fijo al costado en PC).
+  //   r: resumen del carrito · editarPago: link para cambiar el medio de pago
+  const textoEnvio = (valor) => valor === null ? "A calcular" : valor === 0 ? "Gratis" : formatoPrecio(valor);
+%>
+<aside class="pedido" id="pedido" aria-label="Resumen del pedido">
+  <button type="button" class="pedido__toggle" id="pedidoToggle" aria-expanded="false" aria-controls="pedidoCuerpo">
+    <span class="pedido__toggle-texto">
+      <span class="pedido__toggle-abrir">Ver resumen</span>
+      <span class="pedido__toggle-cerrar">Ocultar resumen</span>
+      <small>(<%= r.cantidad %> <%= r.cantidad === 1 ? 'producto' : 'productos' %>)</small>
+    </span>
+    <strong data-valor="total"><%= formatoPrecio(r.total) %></strong>
+  </button>
+
+  <div class="pedido__cuerpo" id="pedidoCuerpo">
+    <h2 class="pedido__titulo">Tu pedido</h2>
+
+    <ul class="pedido__items">
+      <% r.items.forEach((item, n) => { %>
+        <li class="pedido__item">
+          <span class="pedido__imagen <%= n % 3 === 1 ? 'pedido__imagen--oscura' : '' %>">
+            (IMG)
+            <span class="pedido__cantidad"><%= item.cantidad %></span>
+          </span>
+          <span class="pedido__info">
+            <span class="pedido__nombre"><%= item.producto.nombre %></span>
+            <% if (item.color) { %><small>Color: <%= item.color %><%= item.talle ? ' · Talle: ' + item.talle : '' %></small><% } %>
+          </span>
+          <span class="pedido__precio"><%= formatoPrecio(item.subtotal) %></span>
+        </li>
+      <% }) %>
+    </ul>
+
+    <dl class="pedido__totales">
+      <div class="pedido__fila">
+        <dt>Subtotal</dt>
+        <dd><%= formatoPrecio(r.subtotal) %></dd>
+      </div>
+      <% if (r.cupon) { %>
+        <div class="pedido__fila">
+          <dt>Cupón <small><%= r.cupon.codigo %></small></dt>
+          <dd>-<%= formatoPrecio(r.descuentoCupon) %></dd>
+        </div>
+      <% } %>
+      <div class="pedido__fila" data-fila="descuentoPago" <%= r.descuentoPago ? '' : 'hidden' %>>
+        <dt>Descuento transferencia</dt>
+        <dd data-valor="descuentoPago">-<%= formatoPrecio(r.descuentoPago) %></dd>
+      </div>
+      <div class="pedido__fila">
+        <dt>Envío</dt>
+        <dd data-valor="envio"><%= textoEnvio(r.envio) %></dd>
+      </div>
+      <div class="pedido__fila pedido__fila--total">
+        <dt>Total</dt>
+        <dd data-valor="total"><%= formatoPrecio(r.total) %></dd>
+      </div>
+    </dl>
+
+    <p class="pedido__pago">
+      Pagás con <strong data-texto-pago><%= r.medioPago === 'transferencia' ? 'transferencia' : 'tarjeta en ' + r.cuotas + ' cuotas sin interés' %></strong>
+      <% if (locals.editarPago) { %>· <a href="<%= editarPago %>">Editar</a><% } %>
+    </p>
+  </div>
+</aside>

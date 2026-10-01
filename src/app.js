@@ -12,9 +12,12 @@ const db = require("./model/database/models");
 const carritoService = require("./services/carritoService");
 const favoritoService = require("./services/favoritoService");
 
-const puerto = 3000;
+// Render (y otros hostings) indican el puerto en PORT
+const puerto = Number(process.env.PORT) || 3000;
 
 app.use(express.static(path.join(__dirname, "../public")));
+// Navegadores que piden /favicon.ico igual reciben el ícono
+app.get("/favicon.ico", (req, res) => res.redirect(301, "/img/favicon.svg"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride("_method"));
@@ -22,11 +25,20 @@ app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+// Detrás del proxy https de Render: necesario para que la cookie segura funcione
+app.set("trust proxy", 1);
+
+if (!process.env.SESSION_SECRET && process.env.NODE_ENV === "production") {
+  console.warn("⚠️  Falta SESSION_SECRET en las variables de entorno: usá una clave larga y secreta.");
+}
+
 app.use(
   session({
-    secret: "Secreto_FichaTecnica_123",
+    secret: process.env.SESSION_SECRET || "clave-solo-para-desarrollo-local",
     resave: false,
     saveUninitialized: false,
+    // "auto": cookie segura cuando la página se sirve por https (Render), normal en localhost
+    cookie: { secure: "auto", httpOnly: true, sameSite: "lax" },
   }),
 );
 
@@ -36,6 +48,8 @@ app.locals.formatoPrecio = (n) =>
 app.locals.descuentoTransferencia = 0.1;
 // Estado de un pedido explicado para el cliente (Mis pedidos)
 Object.assign(app.locals, require("./helpers/situacionPedido"));
+// Roles: esAdmin(usuario) / esSuperAdmin(usuario) en las vistas
+Object.assign(app.locals, require("./helpers/roles"));
 // Textos editables del inicio: *palabra* → cursiva (ya escapado)
 app.locals.textoRico = require("./services/inicioService").textoRico;
 // $4,7 M · $865 mil · $950 (para tarjetas y ejes del panel)
@@ -72,13 +86,29 @@ app.use(async (req, res, next) => {
 app.use("/admin", adminRouter);
 app.use("/", indexRouter);
 
+// Página que no existe
+app.use((req, res) => {
+  if (req.accepts(["html", "json"]) === "json") return res.status(404).json({ ok: false, mensaje: "No encontrado" });
+  res.status(404).render("error-cuenta", {
+    titulo: "Página no encontrada",
+    estilo: "error-cuenta",
+    mensaje: "La página que buscás no existe o cambió de lugar.",
+    general: true,
+  });
+});
+
 // Error inesperado (por ejemplo, se cayó la base de datos)
 app.use((err, req, res, next) => {
   console.error("❌", err);
   if (req.accepts(["html", "json"]) === "json") {
     return res.status(500).json({ ok: false, mensaje: "Error del servidor, probá de nuevo" });
   }
-  res.status(500).send("<h1>Algo salió mal</h1><p>Probá de nuevo en unos minutos.</p>");
+  res.status(500).render(
+    "error-cuenta",
+    { titulo: "Algo salió mal", estilo: "error-cuenta", mensaje: "Tuvimos un problema. Probá de nuevo en unos minutos.", general: true, codigo: 500 },
+    // Si la página de error también falla (por ejemplo, sin base de datos), texto simple
+    (error, html) => res.send(error ? "<h1>Algo salió mal</h1><p>Probá de nuevo en unos minutos.</p>" : html)
+  );
 });
 
 // Arranca solo si hay conexión con la base de datos
@@ -92,9 +122,11 @@ db.sequelize
     // Pagos: modo y vencimiento de los pedidos con tarjeta que no se pagaron
     const pagos = require("./services/pagoService");
     console.log(
-      pagos.modo() === "demo"
-        ? "💳 Pagos en MODO DEMO (no se cobra). Configurá MP_ACCESS_TOKEN en .env para cobrar con Mercado Pago."
-        : `💳 Pagos con Mercado Pago${pagos.esTokenDePrueba() ? " (credenciales de PRUEBA)" : ""}`
+      {
+        demo: "💳 Pagos en MODO DEMO (no se cobra). Configurá MP_ACCESS_TOKEN en .env para cobrar con Mercado Pago.",
+        desactivado: "⚠️  Falta MP_ACCESS_TOKEN: el pago con tarjeta está desactivado (solo transferencia).",
+        mercadopago: `💳 Pagos con Mercado Pago${pagos.esTokenDePrueba() ? " (credenciales de PRUEBA)" : ""}`,
+      }[pagos.modo()]
     );
     pagos.vencerPeriodicamente();
   })

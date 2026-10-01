@@ -1,0 +1,283 @@
+/* ==========================================================
+   ADMIN · PEDIDOS — Estilos propios de la vista (usa base.css + admin.css)
+   Mobile first · Tablet ≥ 768px · PC ≥ 1100px
+   ========================================================== */
+
+.segmentado--estados {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.segmentado--estados::-webkit-scrollbar {
+  display: none;
+}
+
+.pedidos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pedido-fila {
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  transition: border-color var(--transicion);
+}
+
+.pedido-fila:hover,
+.pedido-fila:has(details[open]) {
+  border-color: var(--negro);
+}
+
+.pedido-fila__resumen {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "numero cliente flecha"
+    "estado total   total";
+  align-items: center;
+  gap: 8px 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.pedido-fila__resumen::-webkit-details-marker {
+  display: none;
+}
+
+.pedido-fila__numero {
+  grid-area: numero;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pedido-fila__cliente {
+  grid-area: cliente;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.pedido-fila__cliente strong {
+  font-weight: 600;
+}
+
+.pedido-fila__cliente small {
+  overflow: hidden;
+  font-size: 12px;
+  color: var(--gris-600);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pedido-fila__estado {
+  grid-area: estado;
+  justify-self: start;
+}
+
+.pedido-fila__total {
+  grid-area: total;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.pedido-fila__total small {
+  font-size: 11px;
+  color: var(--gris-600);
+}
+
+.pedido-fila__flecha {
+  grid-area: flecha;
+  width: 8px;
+  height: 8px;
+  border: solid var(--negro);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  transition: transform var(--transicion);
+}
+
+details[open] .pedido-fila__flecha {
+  transform: rotate(-135deg);
+}
+
+.pedido-fila__detalle {
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--gris-200);
+  overflow-x: auto;
+}
+
+.pedido-fila__detalle .tabla {
+  min-width: 460px;
+  font-size: 13px;
+}
+
+.pedido-fila__detalle small {
+  color: var(--gris-600);
+}
+
+/* Pestaña "Sin pagar": separada de los estados que maneja el admin */
+.segmentado__aparte {
+  border-left: 1px dashed var(--gris-400) !important;
+}
+
+/* Explicación de las pestañas Pendiente y Sin pagar */
+.aviso-pedidos {
+  margin: -4px 0 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--gris-400);
+  background: var(--blanco);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--gris-600);
+}
+
+.aviso-pedidos strong {
+  color: var(--negro);
+}
+
+.pedido-fila__confirmar {
+  align-self: flex-start;
+}
+
+/* Estado del cobro (en la línea de cada pedido) */
+.cobro {
+  padding: 1px 6px;
+  border: 1px solid var(--gris-400);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.cobro--aprobado {
+  border-color: var(--negro);
+  background: var(--negro);
+  color: var(--blanco);
+}
+
+.cobro--pendiente {
+  border-style: dashed;
+}
+
+.cobro--rechazado,
+.cobro--reembolsado {
+  text-decoration: line-through;
+}
+
+/* Datos del cliente, la entrega y el cobro */
+.pedido-fila__datos {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gris-200);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.pedido-fila__dato-titulo {
+  margin-bottom: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gris-600);
+}
+
+.pedido-fila__pie {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.pedido-fila__totales div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.pedido-fila__totales dt {
+  color: var(--gris-600);
+}
+
+.pedido-fila__totales dd {
+  font-variant-numeric: tabular-nums;
+}
+
+.pedido-fila__ganancia {
+  margin-top: 4px;
+  padding-top: 8px !important;
+  border-top: 1px solid var(--negro);
+  font-weight: 700;
+}
+
+.pedido-fila__ganancia dt {
+  color: var(--negro) !important;
+}
+
+.pedido-fila__cambiar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pedido-fila__cambiar select {
+  height: 42px;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.pedido-fila.guardando {
+  opacity: 0.6;
+}
+
+/* ==========================================================
+   TABLET ≥ 768px: fila en una línea
+   ========================================================== */
+@media (min-width: 768px) {
+  .pedido-fila__resumen {
+    grid-template-columns: 70px minmax(0, 1fr) 110px 150px 16px;
+    grid-template-areas: "numero cliente estado total flecha";
+    padding: 14px 20px;
+  }
+
+  .pedido-fila__detalle {
+    padding: 4px 20px 20px;
+  }
+
+  .pedido-fila__datos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .pedido-fila__pie {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .pedido-fila__totales {
+    flex: 0 1 320px;
+    order: 2;
+  }
+
+  .pedido-fila__cambiar {
+    flex: 0 0 220px;
+  }
+}

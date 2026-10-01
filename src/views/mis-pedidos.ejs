@@ -1,0 +1,90 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+
+<%
+  // Grupo de cada pedido para los filtros
+  const grupo = (p) => p.estado === "cancelado" ? "cancelados" : p.estado === "entregado" ? "entregados" : "curso";
+  const cantidades = { todos: pedidos.length, curso: 0, entregados: 0, cancelados: 0 };
+  pedidos.forEach((p) => cantidades[grupo(p)]++);
+  const filtros = [
+    { id: "todos", texto: "Todos" },
+    { id: "curso", texto: "En curso" },
+    { id: "entregados", texto: "Entregados" },
+    { id: "cancelados", texto: "Cancelados" },
+  ];
+%>
+
+  <%- include('partials/cuenta-nav') %>
+
+  <main class="contenedor cuenta-cuerpo">
+    <% if (!pedidos.length) { %>
+      <div class="cuenta-vacio">
+        <svg viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 016 0v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <h2>Todavía no hiciste pedidos</h2>
+        <p>Cuando compres algo con esta cuenta, lo vas a poder seguir desde acá.</p>
+        <a href="/catalogo" class="btn btn--solido">Ver el catálogo</a>
+      </div>
+    <% } else { %>
+
+      <div class="filtros-pedidos" role="group" aria-label="Filtrar pedidos">
+        <% filtros.forEach((f) => { %>
+          <button type="button" class="filtros-pedidos__btn <%= filtro === f.id ? 'activo' : '' %>" data-filtro="<%= f.id %>"
+                  aria-pressed="<%= filtro === f.id %>" <%= cantidades[f.id] || f.id === 'todos' ? '' : 'disabled' %>>
+            <%= f.texto %> <small><%= cantidades[f.id] %></small>
+          </button>
+        <% }) %>
+      </div>
+
+      <ul class="lista-pedidos" id="listaPedidos">
+        <% pedidos.forEach((p) => {
+             const s = situacionPedido(p);
+             const unidades = p.items.reduce((acc, i) => acc + i.cantidad, 0);
+             const pagar = p.medioPago === "tarjeta" && p.estado === "pendiente" && p.pagoEstado !== "aprobado"; %>
+          <li class="pedido-tarjeta" data-grupo="<%= grupo(p) %>" <%= filtro !== 'todos' && filtro !== grupo(p) ? 'hidden' : '' %>>
+            <div class="pedido-tarjeta__cabeza">
+              <div>
+                <p class="pedido-tarjeta__numero">Pedido #<%= p.numero %></p>
+                <p class="pedido-tarjeta__fecha"><%= formatoFecha(p.fecha) %> · <%= unidades %> <%= unidades === 1 ? 'producto' : 'productos' %></p>
+              </div>
+              <span class="estado-cliente estado-cliente--<%= s.clave %>"><%= s.texto %></span>
+            </div>
+
+            <div class="pedido-tarjeta__cuerpo">
+              <ul class="miniaturas" aria-label="Productos">
+                <% p.items.slice(0, 4).forEach((i, n) => { %>
+                  <li class="miniatura <%= n % 2 ? 'miniatura--oscura' : '' %>" title="<%= i.cantidad %> × <%= i.nombre %>">
+                    <% if (i.imagen) { %><img src="<%= i.imagen %>" alt="<%= i.nombre %>" loading="lazy"><% } else { %><span>(IMG)</span><% } %>
+                  </li>
+                <% }) %>
+                <% if (p.items.length > 4) { %><li class="miniatura miniatura--mas">+<%= p.items.length - 4 %></li><% } %>
+              </ul>
+              <p class="pedido-tarjeta__nombres"><%= p.items.map((i) => i.nombre).join(' · ') %></p>
+            </div>
+
+            <div class="pedido-tarjeta__pie">
+              <div class="pedido-tarjeta__total">
+                <span>Total</span>
+                <strong><%= formatoPrecio(p.total) %></strong>
+                <small><%= p.medioPago === 'transferencia' ? 'Transferencia' : (p.pagoDetalle || 'Tarjeta') %></small>
+              </div>
+              <div class="pedido-tarjeta__acciones">
+                <% if (pagar) { %>
+                  <form action="/pedido/<%= p.numero %>/pagar" method="POST">
+                    <button type="submit" class="btn btn--solido btn--chico">Pagar ahora</button>
+                  </form>
+                <% } %>
+                <a href="/pedido/<%= p.numero %>" class="btn btn--linea btn--chico">Ver detalle</a>
+              </div>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+
+      <p class="cuenta-vacio cuenta-vacio--filtro" id="sinResultados" hidden>No hay pedidos en esta categoría.</p>
+    <% } %>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/mis-pedidos.js"></script>
+</body>
+</html>
