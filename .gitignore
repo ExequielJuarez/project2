@@ -1,8 +1,6 @@
 node_modules/
 pnpm-lock.yaml
 # Imágenes subidas desde el panel admin
-public/img/productos/*
-!public/img/productos/.gitkeep
-.env
-public/img/inicio/subidas/*
-!public/img/inicio/subidas/.gitkeep
+
+
+
