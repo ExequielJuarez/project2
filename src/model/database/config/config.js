@@ -17,6 +17,8 @@ const base = {
   pool: { max: Number(process.env.DB_POOL_MAX) || 5, min: 0, idle: 10000, acquire: 30000 },
   // Que los DECIMAL lleguen como número y no como texto
   dialectOptions: { decimalNumbers: true, dateStrings: false },
+  // Los hostings gratuitos (Clever Cloud) limitan las conexiones simultáneas
+  pool: { max: Number(process.env.DB_POOL_MAX) || 4, min: 0, idle: 10000, acquire: 30000 },
   define: {
     underscored: true,
     freezeTableName: true,

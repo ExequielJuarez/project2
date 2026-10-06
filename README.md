@@ -9,11 +9,13 @@ Responsive (celular, tablet ≥ 768px y PC ≥ 1100px).
 ## Puesta en marcha
 
 ```bash
-cp .env.example .env     # completar los datos de MySQL
 npm install
-npm run db:instalar      # crea tablas y carga prendas de prueba
 npm start                # http://localhost:3000
 ```
+
+Los datos de MySQL salen del archivo `.env`. Si la base está vacía, `npm start` crea
+solo las tablas y carga el catálogo (29 prendas con sus fotos de `public/img/productos`).
+Para recargarlo desde cero a mano: `npm run db:instalar` (borra las tablas de la tienda).
 
 Usuarios de prueba: ver `database/README.md` (cliente, admin y superadmin).
 

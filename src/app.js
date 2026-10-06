@@ -114,6 +114,15 @@ app.use((err, req, res, next) => {
 // Arranca solo si hay conexión con la base de datos
 db.sequelize
   .authenticate()
+  // Base nueva (sin tablas): crea la estructura y carga el catálogo de prueba
+  .then(async () => {
+    const { instalar, hayQueInstalar } = require("../database/instalar");
+    if (process.env.DB_AUTOINSTALAR !== "false" && (await hayQueInstalar(db.sequelize))) {
+      console.log("🆕 La base está vacía: instalando tablas y catálogo de prueba…");
+      await instalar();
+      console.log("✅ Catálogo cargado.");
+    }
+  })
   // Si la base es de una versión anterior, agrega lo que falte (no borra nada)
   .then(() => require("./model/database/actualizar")())
   .then(() => {
